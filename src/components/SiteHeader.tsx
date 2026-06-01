@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import BrandLogo from "@/components/BrandLogo";
+import NavMegaMenu from "@/components/nav/NavMegaMenu";
 import { useCart } from "@/context/CartContext";
 import type { NavSection } from "@/config/navigation";
 
@@ -33,15 +34,28 @@ export default function SiteHeader({ navSections }: { navSections: NavSection[] 
 
   const scheduleClose = () => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
-    closeTimer.current = setTimeout(() => setOpenMenu(null), 160);
+    closeTimer.current = setTimeout(() => setOpenMenu(null), 200);
   };
 
   const cancelClose = () => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
   };
 
+  const megaOpen = openMenu !== null;
+
   return (
-    <header className="sticky top-0 z-50 border-b border-black/5 bg-white/95 text-neutral-950 shadow-sm backdrop-blur-md">
+    <header
+      className={`sticky top-0 z-50 border-b bg-white/95 text-neutral-950 shadow-sm backdrop-blur-md transition-colors ${
+        megaOpen ? "border-brand/30" : "border-black/5"
+      }`}
+    >
+      {megaOpen ? (
+        <div
+          className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-transparent via-brand to-transparent"
+          aria-hidden
+        />
+      ) : null}
+
       <div className="mx-auto flex h-14 md:h-16 max-w-page items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <Link
           href="/"
@@ -53,19 +67,21 @@ export default function SiteHeader({ navSections }: { navSections: NavSection[] 
         </Link>
 
         <nav
-          className="hidden flex-1 items-center justify-center gap-1 lg:flex xl:gap-2"
+          className="hidden flex-1 items-center justify-center gap-0.5 lg:flex xl:gap-1"
           aria-label="Categorías"
         >
           {navSections.map((section) => {
-            const hasDropdown = section.items.length > 1;
+            const hasMega = section.items.length > 0;
+            const isOpen = openMenu === section.id;
             const active =
               pathname === section.href || pathname.startsWith(section.href + "/");
+
             return (
               <div
                 key={section.id}
                 className="relative"
                 onMouseEnter={() => {
-                  if (!hasDropdown) return;
+                  if (!hasMega) return;
                   cancelClose();
                   setOpenMenu(section.id);
                 }}
@@ -73,38 +89,33 @@ export default function SiteHeader({ navSections }: { navSections: NavSection[] 
               >
                 <Link
                   href={section.href}
-                  className={`inline-flex items-center rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
-                    active
-                      ? "bg-brand/10 text-brand-dark"
-                      : "text-neutral-800 hover:bg-neutral-100 hover:text-neutral-950"
+                  className={`inline-flex items-center rounded-t-lg px-3 py-2.5 text-sm font-semibold transition-all duration-200 ${
+                    isOpen
+                      ? "bg-brand text-white shadow-sm"
+                      : active
+                        ? "bg-brand/10 text-brand-dark"
+                        : "text-neutral-800 hover:bg-brand/10 hover:text-brand-dark"
                   }`}
                 >
                   {section.label}
-                  {hasDropdown ? (
-                    <span className="ml-0.5 text-neutral-500" aria-hidden>
+                  {hasMega ? (
+                    <span
+                      className={`ml-1 text-[10px] transition-transform duration-200 ${
+                        isOpen ? "rotate-180 text-white/90" : "text-neutral-500"
+                      }`}
+                      aria-hidden
+                    >
                       ▾
                     </span>
                   ) : null}
                 </Link>
-                {hasDropdown && openMenu === section.id ? (
-                  <div
-                    className="absolute left-1/2 top-full z-50 mt-2 w-56 -translate-x-1/2 rounded-xl border border-black/10 bg-white py-2 shadow-lg"
+
+                {hasMega && isOpen ? (
+                  <NavMegaMenu
+                    section={section}
                     onMouseEnter={cancelClose}
                     onMouseLeave={scheduleClose}
-                  >
-                    <ul className="max-h-[min(70vh,22rem)] overflow-y-auto py-1">
-                      {section.items.map((item) => (
-                        <li key={item.href}>
-                          <Link
-                            href={item.href}
-                            className="block px-4 py-2 text-sm font-medium text-neutral-800 hover:bg-brand/5 hover:text-brand-dark"
-                          >
-                            {item.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  />
                 ) : null}
               </div>
             );
@@ -165,25 +176,25 @@ export default function SiteHeader({ navSections }: { navSections: NavSection[] 
               <BrandLogo variant="vertical" />
             </div>
             {navSections.map((section) => {
-              const hasDropdown = section.items.length > 1;
+              const hasDropdown = section.items.length > 0;
               return (
                 <div
                   key={section.id}
-                  className="rounded-xl border border-black/5 bg-neutral-50/80 p-2"
+                  className="overflow-hidden rounded-xl border border-black/5 bg-neutral-50/80"
                 >
                   <Link
                     href={section.href}
-                    className="block rounded-lg px-2 py-2 text-sm font-semibold text-neutral-900"
+                    className="block bg-brand/10 px-3 py-2.5 text-sm font-semibold text-brand-dark"
                   >
                     {section.label}
                   </Link>
                   {hasDropdown ? (
-                    <ul className="mt-1 border-t border-black/5 pt-1">
+                    <ul className="border-t border-black/5 py-1">
                       {section.items.map((item) => (
                         <li key={item.href}>
                           <Link
                             href={item.href}
-                            className="block rounded-lg px-2 py-1.5 text-sm text-neutral-700 hover:bg-brand/5 hover:text-brand-dark"
+                            className="block px-3 py-2 text-sm font-medium text-neutral-700 hover:bg-brand/10 hover:text-brand-dark"
                           >
                             {item.label}
                           </Link>
