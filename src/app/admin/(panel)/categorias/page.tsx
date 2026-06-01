@@ -211,18 +211,6 @@ export default function AdminCategoriasPage() {
         onCancel={() => !archiving && setArchiveTarget(null)}
       />
 
-      <AdminNavFixedArmadorCard
-        canEdit={canEdit}
-        onSaved={(msg) => {
-          setMessage(msg);
-          setError(null);
-        }}
-        onError={(msg) => {
-          setError(msg);
-          setMessage(null);
-        }}
-      />
-
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h2 className="text-lg font-bold text-neutral-900">Categorías registradas</h2>
         <select
@@ -252,6 +240,18 @@ export default function AdminCategoriasPage() {
           />
         )}
       </div>
+
+      <AdminNavFixedArmadorCard
+        canEdit={canEdit}
+        onSaved={(msg) => {
+          setMessage(msg);
+          setError(null);
+        }}
+        onError={(msg) => {
+          setError(msg);
+          setMessage(null);
+        }}
+      />
     </div>
   );
 }
