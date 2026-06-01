@@ -4,9 +4,18 @@ import type { CategoryDetail, CategoryTreeItem, PublicProduct } from "./types";
 const REVALIDATE_SECONDS = 60;
 
 async function apiGet<T>(path: string): Promise<T> {
-  const res = await fetch(`${API_BASE_URL}${path}`, {
-    next: { revalidate: REVALIDATE_SECONDS },
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE_URL}${path}`, {
+      next: { revalidate: REVALIDATE_SECONDS },
+    });
+  } catch (cause) {
+    const hint =
+      API_BASE_URL.includes("localhost") && !process.env.NEXT_PUBLIC_API_URL
+        ? " Define NEXT_PUBLIC_API_URL en Vercel (ej. https://gigasystem-api-cl.fly.dev)."
+        : "";
+    throw new Error(`API ${path}: red no disponible.${hint}`, { cause });
+  }
   if (!res.ok) {
     throw new Error(`API ${path}: ${res.status}`);
   }

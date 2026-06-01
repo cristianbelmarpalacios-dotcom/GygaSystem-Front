@@ -1,12 +1,10 @@
-import { API_BASE_URL } from "@/lib/api/config";
+import { serverGetJson } from "@/lib/api/server-fetch";
 import type { HomepagePayload } from "./types";
 
+const EMPTY_HOMEPAGE: HomepagePayload = { sections: [], deals: [] };
+
 export async function fetchHomepage(): Promise<HomepagePayload> {
-  const res = await fetch(`${API_BASE_URL}/v1/homepage`, {
+  return serverGetJson<HomepagePayload>("/v1/homepage", EMPTY_HOMEPAGE, {
     next: { revalidate: 60 },
   });
-  if (!res.ok) {
-    return { sections: [], deals: [] };
-  }
-  return res.json() as Promise<HomepagePayload>;
 }

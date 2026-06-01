@@ -25,7 +25,15 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://gigasystem.cl";
 
 export default async function HomePage() {
   let catalogProducts: Awaited<ReturnType<typeof fetchAllPublishedProducts>> = [];
-  let homepage = await fetchHomepage();
+  let homepage: Awaited<ReturnType<typeof fetchHomepage>> = {
+    sections: [],
+    deals: [],
+  };
+  try {
+    homepage = await fetchHomepage();
+  } catch {
+    /* API no disponible en build o runtime */
+  }
   try {
     catalogProducts = await fetchAllPublishedProducts();
   } catch {
