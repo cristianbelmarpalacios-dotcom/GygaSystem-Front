@@ -14,6 +14,8 @@ import HomeCatalogSection from "@/components/catalog/HomeCatalogSection";
 import { fetchAllPublishedProducts } from "@/lib/catalog/fetch";
 import { fetchHomepage } from "@/lib/homepage/fetch";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = buildPageMetadata({
   title: "Componentes, PCs armados y periféricos",
   description:

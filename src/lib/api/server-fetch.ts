@@ -1,4 +1,4 @@
-import { API_BASE_URL } from "@/lib/api/config";
+import { getServerApiBaseUrl } from "@/lib/api/config";
 
 /** GET JSON en Server Components; no lanza si el API no responde (build/SSR). */
 export async function serverGetJson<T>(
@@ -7,7 +7,7 @@ export async function serverGetJson<T>(
   init?: RequestInit,
 ): Promise<T> {
   try {
-    const res = await fetch(`${API_BASE_URL}${path}`, init);
+    const res = await fetch(`${getServerApiBaseUrl()}${path}`, init);
     if (!res.ok) return fallback;
     return (await res.json()) as T;
   } catch {

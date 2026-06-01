@@ -1,23 +1,30 @@
-import { API_BASE_URL } from "@/lib/api/config";
+import { getServerApiBaseUrl } from "@/lib/api/config";
+import { ApiHttpError } from "@/lib/api/errors";
 import type { CategoryDetail, CategoryTreeItem, PublicProduct } from "./types";
 
 const REVALIDATE_SECONDS = 60;
 
 async function apiGet<T>(path: string): Promise<T> {
+  const base = getServerApiBaseUrl();
   let res: Response;
   try {
-    res = await fetch(`${API_BASE_URL}${path}`, {
+    res = await fetch(`${base}${path}`, {
       next: { revalidate: REVALIDATE_SECONDS },
     });
   } catch (cause) {
     const hint =
-      API_BASE_URL.includes("localhost") && !process.env.NEXT_PUBLIC_API_URL
-        ? " Define NEXT_PUBLIC_API_URL en Vercel (ej. https://gigasystem-api-cl.fly.dev)."
+      base.includes("localhost") &&
+      !process.env.API_URL &&
+      !process.env.NEXT_PUBLIC_API_URL
+        ? " En Vercel define NEXT_PUBLIC_API_URL (y redeploy) o API_URL."
         : "";
     throw new Error(`API ${path}: red no disponible.${hint}`, { cause });
   }
+  if (res.status === 404) {
+    throw new ApiHttpError(`API ${path}: no encontrado`, 404);
+  }
   if (!res.ok) {
-    throw new Error(`API ${path}: ${res.status}`);
+    throw new ApiHttpError(`API ${path}: ${res.status}`, res.status);
   }
   return res.json() as Promise<T>;
 }
