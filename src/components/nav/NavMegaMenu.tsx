@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { NavSection } from "@/config/navigation";
@@ -13,10 +12,18 @@ type Props = {
 };
 
 export default function NavMegaMenu({ section, onMouseEnter, onMouseLeave }: Props) {
-  const baseFeatured = useMemo(
-    () => getNavFeatured(section.id, section.href),
-    [section.id, section.href],
-  );
+  const baseFeatured = useMemo(() => {
+    const fallback = getNavFeatured(section.id, section.href);
+    if (section.featured?.imageUrl) {
+      return {
+        ...fallback,
+        imageUrl: section.featured.imageUrl,
+        title: section.featured.title || fallback.title,
+        description: section.featured.description || fallback.description,
+      };
+    }
+    return fallback;
+  }, [section]);
   const [hoveredHref, setHoveredHref] = useState<string | null>(null);
 
   const hoveredItem = section.items.find((i) => i.href === hoveredHref);
@@ -76,13 +83,11 @@ export default function NavMegaMenu({ section, onMouseEnter, onMouseLeave }: Pro
           </nav>
 
           <div className="relative min-h-[17.5rem] flex-1 overflow-hidden">
-            <Image
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src={featured.imageUrl}
               alt=""
-              fill
-              className="object-cover object-center scale-105 transition-transform duration-500 group-hover:scale-110"
-              sizes="(max-width: 56rem) 70vw"
-              priority={false}
+              className="absolute inset-0 h-full w-full object-cover object-center scale-105 transition-transform duration-500"
             />
             <div
               className="absolute inset-0 bg-gradient-to-r from-neutral-950/95 via-neutral-950/75 to-brand/40"

@@ -1,12 +1,14 @@
 ﻿"use client";
 
-import type { FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import type { AdminCategory } from "@/lib/api/types";
 import {
+  isRootCategoryForm,
   parentOptionsForCategory,
   slugifyCategory,
   type CategoryFormState,
 } from "@/components/admin/admin-category-form";
+import { uploadHomepageImage } from "@/lib/admin/homepage-media";
 
 const inputClass =
   "mt-1 w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20";
@@ -39,6 +41,31 @@ export default function AdminCategoryFormModal({
   if (!open) return null;
 
   const parentOptions = parentOptionsForCategory(categories, editingId);
+  const showNavImage = isRootCategoryForm(form);
+  const [uploadingNavImage, setUploadingNavImage] = useState(false);
+  const [navImageError, setNavImageError] = useState<string | null>(null);
+
+  async function onNavImageFile(file: File | null) {
+    if (!file) return;
+    setUploadingNavImage(true);
+    setNavImageError(null);
+    try {
+      const { url, storageKey } = await uploadHomepageImage(file);
+      onChange((f) => ({
+        ...f,
+        navImageUrl: url,
+        navImageStorageKey: storageKey,
+      }));
+    } catch (e) {
+      setNavImageError(e instanceof Error ? e.message : "No se pudo subir la imagen");
+    } finally {
+      setUploadingNavImage(false);
+    }
+  }
+
+  function clearNavImage() {
+    onChange((f) => ({ ...f, navImageUrl: "", navImageStorageKey: "" }));
+  }
 
   function setField<K extends keyof CategoryFormState>(
     key: K,
@@ -103,7 +130,16 @@ export default function AdminCategoryFormModal({
             <span className="font-medium text-neutral-700">Categoría padre (menú)</span>
             <select
               value={form.parentId}
-              onChange={(e) => setField("parentId", e.target.value)}
+              onChange={(e) => {
+                const parentId = e.target.value;
+                onChange((f) => ({
+                  ...f,
+                  parentId,
+                  ...(parentId
+                    ? { navImageUrl: "", navImageStorageKey: "" }
+                    : {}),
+                }));
+              }}
               className={inputClass}
             >
               <option value="">Ninguna — aparece en el menú principal</option>
@@ -133,7 +169,75 @@ export default function AdminCategoryFormModal({
               rows={3}
               className={inputClass}
             />
+            <p className="mt-1 text-xs text-neutral-500">
+              También se usa como texto en el panel del menú al pasar el mouse.
+            </p>
           </label>
+
+          {showNavImage ? (
+            <div className="rounded-xl border border-brand/20 bg-neutral-950 p-4 text-white">
+              <p className="text-xs font-bold uppercase tracking-wide text-brand-light">
+                Imagen del mega menú
+              </p>
+              <p className="mt-1 text-[11px] text-neutral-400">
+                Fondo del panel al pasar el mouse sobre esta categoría en el menú principal.
+              </p>
+              {form.navImageUrl ? (
+                <div className="relative mt-3 aspect-[16/9] overflow-hidden rounded-lg border border-white/10">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={form.navImageUrl}
+                    alt="Vista previa mega menú"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="mt-3 flex aspect-[16/9] items-center justify-center rounded-lg border border-dashed border-white/20 bg-white/5 text-xs text-neutral-500">
+                  Sin imagen — se usará una por defecto
+                </div>
+              )}
+              <div className="mt-3 flex flex-wrap gap-2">
+                <label
+                  className={`cursor-pointer rounded-lg bg-brand px-3 py-2 text-xs font-bold uppercase tracking-wide text-white hover:bg-brand-dark ${uploadingNavImage || saving ? "pointer-events-none opacity-60" : ""}`}
+                >
+                  {uploadingNavImage
+                    ? "Subiendo…"
+                    : form.navImageUrl
+                      ? "Cambiar imagen"
+                      : "Subir imagen"}
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    className="sr-only"
+                    disabled={saving || uploadingNavImage}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) void onNavImageFile(file).catch(() => {});
+                      e.target.value = "";
+                    }}
+                  />
+                </label>
+                {form.navImageUrl ? (
+                  <button
+                    type="button"
+                    disabled={saving}
+                    onClick={clearNavImage}
+                    className="rounded-lg border border-white/20 px-3 py-2 text-xs font-semibold text-neutral-300 hover:bg-white/10"
+                  >
+                    Quitar imagen
+                  </button>
+                ) : null}
+              </div>
+              {navImageError ? (
+                <p className="mt-2 text-xs text-red-400">{navImageError}</p>
+              ) : null}
+            </div>
+          ) : (
+            <p className="rounded-xl border border-dashed border-neutral-200 bg-neutral-50 px-3 py-2 text-xs text-neutral-500">
+              La imagen del mega menú solo aplica a categorías del menú principal (sin categoría
+              padre).
+            </p>
+          )}
 
           <div className="flex flex-wrap justify-end gap-2 border-t border-black/5 pt-4">
             <button

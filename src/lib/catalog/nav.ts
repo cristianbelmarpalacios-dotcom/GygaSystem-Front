@@ -16,6 +16,15 @@ export function buildStoreNav(tree: CategoryTreeItem[]): NavSection[] {
     id: root.slug,
     label: root.name,
     href: `/catalogo/${root.slug}`,
+    featured: root.navImageUrl
+      ? {
+          imageUrl: root.navImageUrl,
+          title: root.name,
+          description:
+            root.description?.trim() ||
+            `Explora ${root.name} en GIGASYSTEM.`,
+        }
+      : undefined,
     items:
       root.children.length > 0
         ? root.children.map((child) => ({

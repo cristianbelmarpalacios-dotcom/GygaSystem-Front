@@ -3,11 +3,19 @@ export type NavItem = {
   href: string;
 };
 
+/** Panel derecho del mega menú (imagen desde admin en categorías raíz). */
+export type NavMegaFeatured = {
+  imageUrl: string;
+  title: string;
+  description: string;
+};
+
 export type NavSection = {
   id: string;
   label: string;
   href: string;
   items: NavItem[];
+  featured?: NavMegaFeatured;
 };
 
 /** Menú principal tipo ecommerce (desktop + móvil). */

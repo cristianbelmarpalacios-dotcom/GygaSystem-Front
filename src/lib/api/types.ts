@@ -81,6 +81,8 @@ export type AdminCategory = {
   name: string;
   slug: string;
   description: string | null;
+  navImageUrl?: string | null;
+  navImageStorageKey?: string | null;
   status: CategoryStatus;
   parentId: string | null;
   parent?: { id: string; name: string } | null;

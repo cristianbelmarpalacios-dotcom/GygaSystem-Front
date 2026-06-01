@@ -5,6 +5,8 @@ export type CategoryFormState = {
   slug: string;
   description: string;
   parentId: string;
+  navImageUrl: string;
+  navImageStorageKey: string;
 };
 
 export function slugifyCategory(text: string) {
@@ -17,7 +19,14 @@ export function slugifyCategory(text: string) {
 }
 
 export function emptyCategoryForm(): CategoryFormState {
-  return { name: "", slug: "", description: "", parentId: "" };
+  return {
+    name: "",
+    slug: "",
+    description: "",
+    parentId: "",
+    navImageUrl: "",
+    navImageStorageKey: "",
+  };
 }
 
 export function categoryToForm(c: AdminCategory): CategoryFormState {
@@ -26,16 +35,33 @@ export function categoryToForm(c: AdminCategory): CategoryFormState {
     slug: c.slug,
     description: c.description ?? "",
     parentId: c.parentId ?? "",
+    navImageUrl: c.navImageUrl ?? "",
+    navImageStorageKey: c.navImageStorageKey ?? "",
   };
 }
 
 export function formToPayload(form: CategoryFormState) {
+  const isRoot = !form.parentId;
   return {
     name: form.name.trim(),
     slug: form.slug.trim() || slugifyCategory(form.name),
     description: form.description.trim() || undefined,
     parentId: form.parentId || null,
+    ...(isRoot
+      ? {
+          navImageUrl: form.navImageUrl.trim() || null,
+          navImageStorageKey: form.navImageStorageKey.trim() || null,
+        }
+      : {
+          navImageUrl: null,
+          navImageStorageKey: null,
+        }),
   };
+}
+
+/** Solo categorías raíz muestran imagen en el mega menú del sitio. */
+export function isRootCategoryForm(form: CategoryFormState) {
+  return !form.parentId;
 }
 
 /** Excluye la categoría editada y sus descendientes del selector de padre. */

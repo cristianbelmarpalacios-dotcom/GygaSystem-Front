@@ -46,6 +46,7 @@ export type CategoryTreeItem = {
   name: string;
   slug: string;
   description: string | null;
+  navImageUrl?: string | null;
   productCount: number;
   children: CategoryTreeChild[];
 };
