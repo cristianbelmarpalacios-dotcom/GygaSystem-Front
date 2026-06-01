@@ -1,11 +1,7 @@
-export type UserRole = "CUSTOMER" | "STAFF" | "ADMIN";
+import type { AdminPermission } from "@/lib/admin/permissions";
 
-export type AdminPermission = {
-  module: string;
-  canView: boolean;
-  canEdit: boolean;
-  canDelete: boolean;
-};
+export type { AdminPermission };
+export type UserRole = "CUSTOMER" | "STAFF" | "ADMIN";
 
 export type AuthUser = {
   id: string;

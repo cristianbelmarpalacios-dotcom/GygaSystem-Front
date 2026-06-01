@@ -87,7 +87,14 @@ export function pathToModule(pathname: string): AdminModuleKey | null {
   return null;
 }
 
-export function buildPermissionMap(permissions: AdminPermission[]) {
+export function buildPermissionMap(
+  permissions: ReadonlyArray<{
+    module: string;
+    canView: boolean;
+    canEdit: boolean;
+    canDelete: boolean;
+  }>,
+) {
   const map = {} as Record<
     AdminModuleKey,
     { view: boolean; edit: boolean; delete: boolean }
@@ -96,7 +103,9 @@ export function buildPermissionMap(permissions: AdminPermission[]) {
     map[key] = { view: false, edit: false, delete: false };
   }
   for (const p of permissions) {
-    map[p.module] = {
+    if (!(p.module in ADMIN_MODULE_LABELS)) continue;
+    const module = p.module as AdminModuleKey;
+    map[module] = {
       view: p.canView,
       edit: p.canEdit,
       delete: p.canDelete,

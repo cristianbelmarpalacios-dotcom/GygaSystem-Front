@@ -8,13 +8,11 @@ import {
   buildPermissionMap,
   can,
 } from "@/lib/admin/permissions";
-import type { AdminPermission } from "@/lib/api/types";
-
 export function useAdminPermissions() {
   const { user } = useAdminAuth();
 
   const permissionMap = useMemo(
-    () => buildPermissionMap((user?.permissions ?? []) as AdminPermission[]),
+    () => buildPermissionMap(user?.permissions ?? []),
     [user?.permissions],
   );
 
