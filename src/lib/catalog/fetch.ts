@@ -33,6 +33,27 @@ export function fetchCategoryTree() {
   return apiGet<CategoryTreeItem[]>("/v1/categories");
 }
 
+/** Menú principal: sin caché para reflejar imágenes/textos editados en admin. */
+export async function fetchCategoryTreeForNav(): Promise<CategoryTreeItem[]> {
+  const base = getServerApiBaseUrl();
+  let res: Response;
+  try {
+    res = await fetch(`${base}/v1/categories`, { cache: "no-store" });
+  } catch (cause) {
+    const hint =
+      base.includes("localhost") &&
+      !process.env.API_URL &&
+      !process.env.NEXT_PUBLIC_API_URL
+        ? " En Vercel define NEXT_PUBLIC_API_URL (y redeploy) o API_URL."
+        : "";
+    throw new Error("API /v1/categories: red no disponible." + hint, { cause });
+  }
+  if (!res.ok) {
+    throw new ApiHttpError(`API /v1/categories: ${res.status}`, res.status);
+  }
+  return res.json() as Promise<CategoryTreeItem[]>;
+}
+
 export function fetchCategoryBySlug(slug: string) {
   return apiGet<CategoryDetail>(`/v1/categories/${encodeURIComponent(slug)}`);
 }

@@ -4,9 +4,12 @@ import './globals.css'
 import { BRAND, BRAND_LOGOS } from '@/constants/brand'
 import AppShell from '@/components/AppShell'
 import Providers from '@/components/Providers'
-import { fetchCategoryTree } from '@/lib/catalog/fetch'
+import { fetchCategoryTreeForNav } from '@/lib/catalog/fetch'
 import { buildStoreNav } from '@/lib/catalog/nav'
 import { MAIN_NAV } from '@/config/navigation'
+
+/** El menú usa imágenes desde admin; no cachear el layout entero. */
+export const dynamic = 'force-dynamic'
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -58,7 +61,7 @@ export default async function RootLayout({
 }) {
   let storeNav = MAIN_NAV
   try {
-    const tree = await fetchCategoryTree()
+    const tree = await fetchCategoryTreeForNav()
     if (tree.length > 0) storeNav = buildStoreNav(tree)
   } catch {
     /* API no disponible: menú estático de respaldo */

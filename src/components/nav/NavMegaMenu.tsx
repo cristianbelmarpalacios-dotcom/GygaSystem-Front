@@ -85,6 +85,7 @@ export default function NavMegaMenu({ section, onMouseEnter, onMouseLeave }: Pro
           <div className="relative min-h-[17.5rem] flex-1 overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
+              key={featured.imageUrl}
               src={featured.imageUrl}
               alt=""
               className="absolute inset-0 h-full w-full object-cover object-center scale-105 transition-transform duration-500"
