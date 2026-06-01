@@ -1,0 +1,331 @@
+import { PCComponent } from "@/types/pc-components";
+
+export const mockComponents: PCComponent[] = [
+  // Gabinetes
+  {
+    id: "gab-1",
+    name: "Gabinete Darkflash",
+    category: "gabinete",
+    price: 89900,
+    image: "/images/pc1.jpeg",
+    has3dPreview: true,
+    model3d: "/models/cases/demo-mid-tower.glb",
+    model3dScale: 0.95,
+    model3dPosition: [0, -0.03, 0],
+    description: "Gabinete Darkflash estilo aquarium con paneles de vidrio",
+    specifications: {
+      Formato: "ATX Mid Tower",
+      Ventiladores: "4 incluidos",
+      Panel: "Vidrio frontal y lateral",
+    },
+  },
+  {
+    id: "gab-2",
+    name: "Gabinete Mini ITX",
+    category: "gabinete",
+    price: 129900,
+    image: "/images/pc2.jpeg",
+    has3dPreview: false,
+    description: "Gabinete compacto para builds Mini ITX",
+    specifications: {
+      Formato: "Mini ITX",
+      Ventiladores: "2 incluidos",
+      Panel: "Vidrio templado",
+    },
+  },
+  {
+    id: "gab-3",
+    name: "Gabinete Full Tower",
+    category: "gabinete",
+    price: 159900,
+    image: "/images/pc3.jpeg",
+    has3dPreview: false,
+    description: "Gabinete grande con excelente flujo de aire",
+    specifications: {
+      Formato: "Full Tower",
+      Ventiladores: "4 incluidos",
+      Panel: "Vidrio templado",
+    },
+  },
+
+  // Procesadores
+  {
+    id: "cpu-1",
+    name: "Intel Core i5-13400F",
+    category: "procesador",
+    price: 249900,
+    image: "/images/cpu-1.jpg",
+    description: "Procesador de 10 núcleos, 16 hilos",
+    specifications: {
+      Núcleos: "10",
+      Hilos: "16",
+      "Frecuencia base": "2.5 GHz",
+      "Frecuencia turbo": "4.6 GHz",
+    },
+  },
+  {
+    id: "cpu-2",
+    name: "AMD Ryzen 5 5600X",
+    category: "procesador",
+    price: 229900,
+    image: "/images/cpu-2.jpg",
+    description: "Procesador de 6 núcleos, 12 hilos",
+    specifications: {
+      Núcleos: "6",
+      Hilos: "12",
+      "Frecuencia base": "3.7 GHz",
+      "Frecuencia turbo": "4.6 GHz",
+    },
+  },
+  {
+    id: "cpu-3",
+    name: "Intel Core i7-13700K",
+    category: "procesador",
+    price: 449900,
+    image: "/images/cpu-3.jpg",
+    description: "Procesador de alto rendimiento",
+    specifications: {
+      Núcleos: "16",
+      Hilos: "24",
+      "Frecuencia base": "3.4 GHz",
+      "Frecuencia turbo": "5.4 GHz",
+    },
+  },
+
+  // Tarjetas Madre
+  {
+    id: "mobo-1",
+    name: "ASUS B550M",
+    category: "tarjeta-madre",
+    price: 149900,
+    image: "/images/mobo-1.jpeg",
+    description: "Placa base Micro ATX con WiFi",
+    specifications: {
+      Formato: "Micro ATX",
+      Socket: "AM4",
+      WiFi: "Sí",
+      "RAM Slots": "4",
+    },
+  },
+  {
+    id: "mobo-2",
+    name: "MSI Z790",
+    category: "tarjeta-madre",
+    price: 299900,
+    image: "/images/mobo-2.jpeg",
+    description: "Placa base ATX para Intel",
+    specifications: {
+      Formato: "ATX",
+      Socket: "LGA 1700",
+      WiFi: "Sí",
+      "RAM Slots": "4",
+    },
+  },
+
+  // RAM
+  {
+    id: "ram-1",
+    name: "Corsair Vengeance 16GB DDR4",
+    category: "ram",
+    price: 89900,
+    image: "/images/ram-1.jpg",
+    description: "Kit de 2x8GB DDR4 3200MHz",
+    specifications: {
+      Capacidad: "16GB (2x8GB)",
+      Velocidad: "3200MHz",
+      Tipo: "DDR4",
+    },
+  },
+  {
+    id: "ram-2",
+    name: "G.Skill Trident Z 32GB DDR4",
+    category: "ram",
+    price: 179900,
+    image: "/images/ram-2.jpg",
+    description: "Kit de 2x16GB DDR4 3600MHz",
+    specifications: {
+      Capacidad: "32GB (2x16GB)",
+      Velocidad: "3600MHz",
+      Tipo: "DDR4",
+    },
+  },
+  {
+    id: "ram-3",
+    name: "Corsair Dominator 32GB DDR5",
+    category: "ram",
+    price: 249900,
+    image: "/images/ram-3.jpg",
+    description: "Kit de 2x16GB DDR5 5600MHz",
+    specifications: {
+      Capacidad: "32GB (2x16GB)",
+      Velocidad: "5600MHz",
+      Tipo: "DDR5",
+    },
+  },
+
+  // Tarjetas Gráficas
+  {
+    id: "gpu-1",
+    name: "NVIDIA RTX 4060 8GB",
+    category: "tarjeta-grafica",
+    price: 449900,
+    image: "/images/gpu-1.jpg",
+    description: "Tarjeta gráfica de gama media",
+    specifications: {
+      VRAM: "8GB GDDR6",
+      Bus: "PCIe 4.0",
+      Consumo: "115W",
+    },
+  },
+  {
+    id: "gpu-2",
+    name: "NVIDIA RTX 4070 12GB",
+    category: "tarjeta-grafica",
+    price: 799900,
+    image: "/images/gpu-2.jpg",
+    description: "Tarjeta gráfica de alto rendimiento",
+    specifications: {
+      VRAM: "12GB GDDR6X",
+      Bus: "PCIe 4.0",
+      Consumo: "200W",
+    },
+  },
+  {
+    id: "gpu-3",
+    name: "AMD RX 7800 XT 16GB",
+    category: "tarjeta-grafica",
+    price: 699900,
+    image: "/images/gpu-3.jpg",
+    description: "Tarjeta gráfica AMD de alto rendimiento",
+    specifications: {
+      VRAM: "16GB GDDR6",
+      Bus: "PCIe 4.0",
+      Consumo: "263W",
+    },
+  },
+
+  // Almacenamiento
+  {
+    id: "storage-1",
+    name: "SSD NVMe 500GB",
+    category: "almacenamiento",
+    price: 69900,
+    image: "/images/storage-1.jpg",
+    description: "SSD NVMe PCIe 3.0",
+    specifications: {
+      Capacidad: "500GB",
+      Tipo: "NVMe PCIe 3.0",
+      Lectura: "3500 MB/s",
+      Escritura: "3000 MB/s",
+    },
+  },
+  {
+    id: "storage-2",
+    name: "SSD NVMe 1TB",
+    category: "almacenamiento",
+    price: 129900,
+    image: "/images/storage-2.jpg",
+    description: "SSD NVMe PCIe 4.0",
+    specifications: {
+      Capacidad: "1TB",
+      Tipo: "NVMe PCIe 4.0",
+      Lectura: "7000 MB/s",
+      Escritura: "5000 MB/s",
+    },
+  },
+  {
+    id: "storage-3",
+    name: "HDD 2TB 7200RPM",
+    category: "almacenamiento",
+    price: 89900,
+    image: "/images/storage-3.jpg",
+    description: "Disco duro para almacenamiento masivo",
+    specifications: {
+      Capacidad: "2TB",
+      Tipo: "HDD",
+      Velocidad: "7200 RPM",
+    },
+  },
+
+  // Fuentes de Poder
+  {
+    id: "psu-1",
+    name: "Fuente 650W 80+ Bronze",
+    category: "fuente-poder",
+    price: 89900,
+    image: "/images/psu-1.jpg",
+    description: "Fuente de poder semi-modular",
+    specifications: {
+      Potencia: "650W",
+      Certificación: "80+ Bronze",
+      Modular: "Semi-modular",
+    },
+  },
+  {
+    id: "psu-2",
+    name: "Fuente 750W 80+ Gold",
+    category: "fuente-poder",
+    price: 149900,
+    image: "/images/psu-2.jpg",
+    description: "Fuente de poder totalmente modular",
+    specifications: {
+      Potencia: "750W",
+      Certificación: "80+ Gold",
+      Modular: "Totalmente modular",
+    },
+  },
+  {
+    id: "psu-3",
+    name: "Fuente 850W 80+ Gold",
+    category: "fuente-poder",
+    price: 199900,
+    image: "/images/psu-3.jpg",
+    description: "Fuente de poder para builds de alto rendimiento",
+    specifications: {
+      Potencia: "850W",
+      Certificación: "80+ Gold",
+      Modular: "Totalmente modular",
+    },
+  },
+
+  // Refrigeración
+  {
+    id: "cooler-1",
+    name: "Cooler CPU Air",
+    category: "refrigeracion",
+    price: 49900,
+    image: "/images/cooler-1.jpg",
+    description: "Cooler de aire para CPU",
+    specifications: {
+      Tipo: "Aire",
+      TDP: "150W",
+      Ruido: "25 dBA",
+    },
+  },
+  {
+    id: "cooler-2",
+    name: "AIO 240mm",
+    category: "refrigeracion",
+    price: 149900,
+    image: "/images/cooler-2.jpg",
+    description: "Refrigeración líquida All-in-One",
+    specifications: {
+      Tipo: "Líquida AIO",
+      Radiador: "240mm",
+      TDP: "250W",
+    },
+  },
+  {
+    id: "cooler-3",
+    name: "AIO 360mm",
+    category: "refrigeracion",
+    price: 199900,
+    image: "/images/cooler-3.jpg",
+    description: "Refrigeración líquida All-in-One premium",
+    specifications: {
+      Tipo: "Líquida AIO",
+      Radiador: "360mm",
+      TDP: "300W",
+    },
+  },
+];
