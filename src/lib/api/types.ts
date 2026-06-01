@@ -89,6 +89,16 @@ export type AdminCategory = {
   _count?: { products: number };
 };
 
+export type AdminNavFixedItem = {
+  id: string;
+  slug: string;
+  label: string;
+  href: string;
+  description: string | null;
+  navImageUrl?: string | null;
+  navImageStorageKey?: string | null;
+};
+
 export type AdminBrand = {
   id: string;
   name: string;

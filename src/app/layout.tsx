@@ -4,7 +4,7 @@ import './globals.css'
 import { BRAND, BRAND_LOGOS } from '@/constants/brand'
 import AppShell from '@/components/AppShell'
 import Providers from '@/components/Providers'
-import { fetchCategoryTreeForNav } from '@/lib/catalog/fetch'
+import { fetchCategoryTreeForNav, fetchNavFixedForNav } from '@/lib/catalog/fetch'
 import { buildStoreNav } from '@/lib/catalog/nav'
 import { MAIN_NAV } from '@/config/navigation'
 
@@ -61,8 +61,13 @@ export default async function RootLayout({
 }) {
   let storeNav = MAIN_NAV
   try {
-    const tree = await fetchCategoryTreeForNav()
-    if (tree.length > 0) storeNav = buildStoreNav(tree)
+    const [tree, fixedNav] = await Promise.all([
+      fetchCategoryTreeForNav(),
+      fetchNavFixedForNav().catch(() => []),
+    ])
+    if (tree.length > 0 || fixedNav.length > 0) {
+      storeNav = buildStoreNav(tree, fixedNav)
+    }
   } catch {
     /* API no disponible: menú estático de respaldo */
   }

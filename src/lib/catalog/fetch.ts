@@ -1,6 +1,11 @@
 import { getServerApiBaseUrl } from "@/lib/api/config";
 import { ApiHttpError } from "@/lib/api/errors";
-import type { CategoryDetail, CategoryTreeItem, PublicProduct } from "./types";
+import type {
+  CategoryDetail,
+  CategoryTreeItem,
+  NavFixedItem,
+  PublicProduct,
+} from "./types";
 
 const REVALIDATE_SECONDS = 60;
 
@@ -52,6 +57,21 @@ export async function fetchCategoryTreeForNav(): Promise<CategoryTreeItem[]> {
     throw new ApiHttpError(`API /v1/categories: ${res.status}`, res.status);
   }
   return res.json() as Promise<CategoryTreeItem[]>;
+}
+
+/** Menú fijo (Armador de PC, etc.) para el mega menú. */
+export async function fetchNavFixedForNav(): Promise<NavFixedItem[]> {
+  const base = getServerApiBaseUrl();
+  let res: Response;
+  try {
+    res = await fetch(`${base}/v1/nav-fixed`, { cache: "no-store" });
+  } catch (cause) {
+    throw new Error("API /v1/nav-fixed: red no disponible.", { cause });
+  }
+  if (!res.ok) {
+    throw new ApiHttpError(`API /v1/nav-fixed: ${res.status}`, res.status);
+  }
+  return res.json() as Promise<NavFixedItem[]>;
 }
 
 export function fetchCategoryBySlug(slug: string) {

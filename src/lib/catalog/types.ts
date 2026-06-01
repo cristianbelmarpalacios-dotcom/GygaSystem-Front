@@ -51,6 +51,15 @@ export type CategoryTreeItem = {
   children: CategoryTreeChild[];
 };
 
+/** Entrada fija del menú (ej. Armador de PC). */
+export type NavFixedItem = {
+  slug: string;
+  label: string;
+  href: string;
+  description: string | null;
+  navImageUrl?: string | null;
+};
+
 export type CategoryChildSection = {
   id: string;
   name: string;

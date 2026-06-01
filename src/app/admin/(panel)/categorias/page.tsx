@@ -2,6 +2,7 @@
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import AdminCategoryFormModal from "@/components/admin/AdminCategoryFormModal";
+import AdminNavFixedArmadorCard from "@/components/admin/AdminNavFixedArmadorCard";
 import ConfirmDialog from "@/components/admin/ConfirmDialog";
 import CategoryTreeList from "@/components/admin/CategoryTreeList";
 import {
@@ -208,6 +209,18 @@ export default function AdminCategoriasPage() {
         loading={archiving}
         onConfirm={() => void confirmArchive()}
         onCancel={() => !archiving && setArchiveTarget(null)}
+      />
+
+      <AdminNavFixedArmadorCard
+        canEdit={canEdit}
+        onSaved={(msg) => {
+          setMessage(msg);
+          setError(null);
+        }}
+        onError={(msg) => {
+          setError(msg);
+          setMessage(null);
+        }}
       />
 
       <div className="flex flex-wrap items-center justify-between gap-4">
