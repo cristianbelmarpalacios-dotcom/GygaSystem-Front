@@ -15,6 +15,12 @@ import {
 import { apiFetch } from "@/lib/api/client";
 import type { AdminCategory, CategoryStatus } from "@/lib/api/types";
 import { useAdminPermissions } from "@/hooks/useAdminPermissions";
+import AdminAlert from "@/components/admin/ui/AdminAlert";
+import AdminButton from "@/components/admin/ui/AdminButton";
+import AdminLoadingSkeleton from "@/components/admin/ui/AdminLoadingSkeleton";
+import AdminPageHeader from "@/components/admin/ui/AdminPageHeader";
+import AdminPanel from "@/components/admin/ui/AdminPanel";
+import { adminSelectClass } from "@/lib/admin/ui";
 
 export default function AdminCategoriasPage() {
   const { can } = useAdminPermissions();
@@ -142,34 +148,29 @@ export default function AdminCategoriasPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-neutral-900">Categorías</h1>
-          <p className="mt-1 text-sm text-neutral-600">
+      <AdminPageHeader
+        eyebrow="Catálogo"
+        title="Categorías"
+        description={
+          <>
             Categorías del menú principal en tarjetas; pulsa la flecha o el nombre para ver
             subcategorías. Sin padre = menú principal; con padre = subtipo.{" "}
             <a href="/admin/ayuda#categorias" className="font-semibold text-brand hover:text-brand-dark">
               Ayuda
             </a>
-          </p>
-        </div>
-        {canEdit ? (
-          <button
-            type="button"
-            onClick={openCreateModal}
-            className="shrink-0 rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white shadow-brand hover:bg-brand-dark"
-          >
-            + Crear categoría
-          </button>
-        ) : null}
-      </div>
+          </>
+        }
+        actions={
+          canEdit ? (
+            <AdminButton type="button" onClick={openCreateModal}>
+              + Crear categoría
+            </AdminButton>
+          ) : undefined
+        }
+      />
 
-      {error ? (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
-      ) : null}
-      {message ? (
-        <p className="rounded-xl bg-green-50 px-4 py-3 text-sm text-green-800">{message}</p>
-      ) : null}
+      {error ? <AdminAlert variant="error">{error}</AdminAlert> : null}
+      {message ? <AdminAlert variant="success">{message}</AdminAlert> : null}
 
       <AdminCategoryFormModal
         open={createOpen}
@@ -211,22 +212,22 @@ export default function AdminCategoriasPage() {
         onCancel={() => !archiving && setArchiveTarget(null)}
       />
 
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <h2 className="text-lg font-bold text-neutral-900">Categorías registradas</h2>
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value as CategoryStatus | "")}
-          className="rounded-xl border border-neutral-200 px-3 py-2.5 text-sm"
-        >
-          <option value="PUBLISHED">Solo vigentes</option>
-          <option value="">Todas</option>
-          <option value="ARCHIVED">Solo no vigentes</option>
-        </select>
-      </div>
-
-      <div className="rounded-2xl border border-black/5 bg-white p-4 shadow-sm sm:p-6">
+      <AdminPanel
+        title="Categorías registradas"
+        actions={
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as CategoryStatus | "")}
+            className={adminSelectClass}
+          >
+            <option value="PUBLISHED">Solo vigentes</option>
+            <option value="">Todas</option>
+            <option value="ARCHIVED">Solo no vigentes</option>
+          </select>
+        }
+      >
         {loading ? (
-          <p className="text-sm text-neutral-500">Cargando…</p>
+          <AdminLoadingSkeleton rows={4} />
         ) : tree.length === 0 ? (
           <p className="text-sm text-neutral-500">No hay categorías con este filtro.</p>
         ) : (
@@ -239,7 +240,7 @@ export default function AdminCategoriasPage() {
             onPublish={(id) => void publishCategory(id)}
           />
         )}
-      </div>
+      </AdminPanel>
 
       <AdminNavFixedArmadorCard
         canEdit={canEdit}

@@ -10,6 +10,11 @@ import {
   formatMoney,
 } from "@/lib/admin/format";
 import { useAdminPermissions } from "@/hooks/useAdminPermissions";
+import AdminAlert from "@/components/admin/ui/AdminAlert";
+import AdminLoadingSkeleton from "@/components/admin/ui/AdminLoadingSkeleton";
+import AdminPageHeader from "@/components/admin/ui/AdminPageHeader";
+import AdminPanel from "@/components/admin/ui/AdminPanel";
+import { adminInputClass, adminSelectClass, adminTableHeadClass, adminTableRowClass, adminLabelClass } from "@/lib/admin/ui";
 
 const STATUS_OPTIONS = Object.keys(ORDER_STATUS_LABELS) as OrderStatus[];
 
@@ -67,45 +72,42 @@ export default function AdminPedidosPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-neutral-900">Pedidos y ventas</h1>
-          <p className="mt-1 text-sm text-neutral-600">
-            Quién compró, qué llevó, cuándo y en qué estado está cada pedido.
-          </p>
-        </div>
-        <label className="text-sm">
-          <span className="mb-1 block font-medium text-neutral-700">Filtrar estado</span>
-          <select
-            value={filter}
-            onChange={(e) => setFilter(e.target.value as OrderStatus | "")}
-            className="rounded-lg border border-neutral-200 px-3 py-2 text-sm"
-          >
-            <option value="">Todos</option>
-            {STATUS_OPTIONS.map((s) => (
-              <option key={s} value={s}>
-                {ORDER_STATUS_LABELS[s]}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
+    <div className="space-y-8">
+      <AdminPageHeader
+        eyebrow="Ventas"
+        title="Pedidos y ventas"
+        description="Quién compró, qué llevó, cuándo y en qué estado está cada pedido."
+        actions={
+          <label className="text-sm">
+            <span className={adminLabelClass}>Filtrar estado</span>
+            <select
+              value={filter}
+              onChange={(e) => setFilter(e.target.value as OrderStatus | "")}
+              className={adminSelectClass}
+            >
+              <option value="">Todos</option>
+              {STATUS_OPTIONS.map((s) => (
+                <option key={s} value={s}>
+                  {ORDER_STATUS_LABELS[s]}
+                </option>
+              ))}
+            </select>
+          </label>
+        }
+      />
 
-      {error ? (
-        <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
-      ) : null}
+      {error ? <AdminAlert variant="error">{error}</AdminAlert> : null}
 
       <div className="grid gap-6 lg:grid-cols-5">
-        <div className="lg:col-span-3 overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm">
+        <AdminPanel className="lg:col-span-3" title="Listado" noPadding>
           {loading ? (
-            <p className="p-6 text-sm text-neutral-500">Cargando pedidos…</p>
+            <AdminLoadingSkeleton rows={6} />
           ) : orders.length === 0 ? (
             <p className="p-6 text-sm text-neutral-500">No hay pedidos con este filtro.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full min-w-[520px] text-left text-sm">
-                <thead className="border-b border-black/5 bg-neutral-50 text-xs uppercase tracking-wide text-neutral-500">
+                <thead className={adminTableHeadClass}>
                   <tr>
                     <th className="px-4 py-3">Pedido</th>
                     <th className="px-4 py-3">Cliente</th>
@@ -122,7 +124,7 @@ export default function AdminPedidosPage() {
                         setSelectedId(order.id);
                         setNewStatus(order.status);
                       }}
-                      className={`cursor-pointer border-b border-black/5 transition-colors hover:bg-brand/5 ${
+                      className={`cursor-pointer ${adminTableRowClass} ${
                         selectedId === order.id ? "bg-brand/10" : ""
                       }`}
                     >
@@ -145,9 +147,9 @@ export default function AdminPedidosPage() {
               </table>
             </div>
           )}
-        </div>
+        </AdminPanel>
 
-        <div className="lg:col-span-2 rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
+        <AdminPanel className="lg:col-span-2" title="Detalle del pedido">
           {!selected ? (
             <p className="text-sm text-neutral-500">
               Selecciona un pedido de la tabla para ver el detalle y cambiar su estado.
@@ -201,7 +203,7 @@ export default function AdminPedidosPage() {
                 <select
                   value={newStatus}
                   onChange={(e) => setNewStatus(e.target.value as OrderStatus)}
-                  className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm"
+                  className={adminSelectClass + " mt-1 w-full"}
                 >
                   {STATUS_OPTIONS.map((s) => (
                     <option key={s} value={s}>
@@ -216,7 +218,7 @@ export default function AdminPedidosPage() {
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   rows={2}
-                  className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2 text-sm"
+                  className={adminInputClass}
                   placeholder="Ej. enviado con Starken…"
                 />
                 <button
@@ -250,7 +252,7 @@ export default function AdminPedidosPage() {
               ) : null}
             </div>
           )}
-        </div>
+        </AdminPanel>
       </div>
     </div>
   );

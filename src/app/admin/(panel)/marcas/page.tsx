@@ -4,6 +4,12 @@ import { FormEvent, useCallback, useEffect, useState } from "react";
 import { apiFetch } from "@/lib/api/client";
 import type { AdminBrand } from "@/lib/api/types";
 import { useAdminPermissions } from "@/hooks/useAdminPermissions";
+import AdminAlert from "@/components/admin/ui/AdminAlert";
+import AdminButton from "@/components/admin/ui/AdminButton";
+import AdminLoadingSkeleton from "@/components/admin/ui/AdminLoadingSkeleton";
+import AdminPageHeader from "@/components/admin/ui/AdminPageHeader";
+import AdminPanel from "@/components/admin/ui/AdminPanel";
+import { adminInputClass, adminLabelClass } from "@/lib/admin/ui";
 
 export default function AdminMarcasPage() {
   const { can } = useAdminPermissions();
@@ -56,66 +62,55 @@ export default function AdminMarcasPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Marcas</h1>
-        <p className="mt-1 text-sm text-neutral-600">
-          Las marcas se asignan a cada producto y aparecen como filtro en el catálogo de la tienda.
-        </p>
-      </div>
+      <AdminPageHeader
+        eyebrow="Catálogo"
+        title="Marcas"
+        description="Las marcas se asignan a cada producto y aparecen como filtro en el catálogo de la tienda."
+      />
 
-      {error ? (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
-      ) : null}
-      {message ? (
-        <p className="rounded-xl bg-green-50 px-4 py-3 text-sm text-green-800">{message}</p>
-      ) : null}
+      {error ? <AdminAlert variant="error">{error}</AdminAlert> : null}
+      {message ? <AdminAlert variant="success">{message}</AdminAlert> : null}
 
       {canEdit ? (
-        <form
-          onSubmit={onCreate}
-          className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm md:max-w-lg"
-        >
-          <h2 className="text-sm font-bold uppercase tracking-wide text-brand-dark">
-            Nueva marca
-          </h2>
-          <label className="mt-4 block text-sm">
-            <span className="font-medium text-neutral-700">Nombre</span>
-            <input
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Ej. ASUS, Corsair, Kingston…"
-              className="mt-1 w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
-            />
-          </label>
-          <button
-            type="submit"
-            disabled={saving || !name.trim()}
-            className="mt-4 rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-dark disabled:opacity-60"
-          >
-            {saving ? "Creando…" : "Crear marca"}
-          </button>
-        </form>
+        <AdminPanel title="Nueva marca" className="md:max-w-lg">
+          <form onSubmit={onCreate}>
+            <label className="block text-sm">
+              <span className={adminLabelClass}>Nombre</span>
+              <input
+                required
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Ej. ASUS, Corsair, Kingston…"
+                className={adminInputClass}
+              />
+            </label>
+            <AdminButton
+              type="submit"
+              disabled={saving || !name.trim()}
+              className="mt-4"
+            >
+              {saving ? "Creando…" : "Crear marca"}
+            </AdminButton>
+          </form>
+        </AdminPanel>
       ) : null}
 
-      <div className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm">
-        <div className="border-b border-black/5 bg-neutral-50 px-4 py-3">
-          <h2 className="text-sm font-bold text-neutral-900">
-            Marcas registradas ({brands.length})
-          </h2>
-        </div>
+      <AdminPanel
+        title={`Marcas registradas (${brands.length})`}
+        noPadding
+      >
         {loading ? (
-          <p className="p-6 text-sm text-neutral-500">Cargando…</p>
+          <AdminLoadingSkeleton rows={5} />
         ) : brands.length === 0 ? (
           <p className="p-6 text-sm text-neutral-500">
             Aún no hay marcas. Crea la primera arriba.
           </p>
         ) : (
-          <ul className="divide-y divide-black/5">
+          <ul className="divide-y divide-neutral-100">
             {brands.map((brand) => (
               <li
                 key={brand.id}
-                className="flex items-center justify-between gap-4 px-4 py-3 text-sm"
+                className="flex items-center justify-between gap-4 px-5 py-3.5 text-sm transition-colors hover:bg-brand/[0.03]"
               >
                 <span className="font-medium text-neutral-900">{brand.name}</span>
                 <span className="font-mono text-xs text-neutral-500">{brand.slug}</span>
@@ -123,7 +118,7 @@ export default function AdminMarcasPage() {
             ))}
           </ul>
         )}
-      </div>
+      </AdminPanel>
     </div>
   );
 }

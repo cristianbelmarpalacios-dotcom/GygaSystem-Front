@@ -13,7 +13,7 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const next = searchParams.get("next") ?? "/admin";
 
-  const [email, setEmail] = useState("giovanni@gigasystem.cl");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -90,14 +90,9 @@ function LoginForm() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-xs text-neutral-500">
-          Admin: <code className="text-neutral-700">giovanni@gigasystem.cl</code>
-          <br />
-          Contraseña: <code className="text-neutral-700">Admin1234*</code>
-        </p>
         <Link
           href="/"
-          className="mt-4 block text-center text-sm font-semibold text-brand hover:text-brand-dark"
+          className="mt-6 block text-center text-sm font-semibold text-brand hover:text-brand-dark"
         >
           Volver a la tienda
         </Link>

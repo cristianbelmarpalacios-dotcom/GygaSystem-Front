@@ -226,4 +226,32 @@ export const ADMIN_HELP_SECTIONS: HelpSection[] = [
       },
     ],
   },
+  {
+    id: "marketing",
+    title: "Marketing y publicidad",
+    intro:
+      "Centraliza conexiones con Google Ads, Meta, píxeles y métricas de la tienda.",
+    items: [
+      {
+        term: "Resumen y métricas",
+        definition:
+          "Muestra ingresos y pedidos reales de la tienda en el período elegido. Gasto, clics y ROAS de cada red aparecerán cuando la API esté conectada.",
+      },
+      {
+        term: "Conectar plataforma",
+        definition:
+          "Registra la cuenta que usarás. El inicio de sesión OAuth con Google/Meta llegará en una actualización; hasta entonces puedes guardar nombre e ID de cuenta.",
+      },
+      {
+        term: "Píxeles y etiquetas",
+        definition:
+          "IDs de GTM, GA4, Meta Pixel y conversiones de Google Ads para la tienda pública. Guardar aquí no inyecta scripts todavía; es la configuración previa.",
+      },
+      {
+        term: "Embudo",
+        definition:
+          "Checkouts y compras pagadas salen de pedidos. Visitas y carrito se completarán con analítica conectada.",
+      },
+    ],
+  },
 ];

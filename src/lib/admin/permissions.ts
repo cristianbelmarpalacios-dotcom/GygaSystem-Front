@@ -6,7 +6,8 @@ export type AdminModuleKey =
   | "USERS"
   | "ROLES"
   | "HELP"
-  | "HOMEPAGE";
+  | "HOMEPAGE"
+  | "MARKETING";
 
 export type PermissionAction = "view" | "edit" | "delete";
 
@@ -26,6 +27,7 @@ export const ADMIN_MODULE_LABELS: Record<AdminModuleKey, string> = {
   ROLES: "Roles y permisos",
   HELP: "Ayuda",
   HOMEPAGE: "Promociones y destacados",
+  MARKETING: "Marketing y publicidad",
 };
 
 export const ADMIN_MODULE_DESCRIPTIONS: Record<AdminModuleKey, string> = {
@@ -38,6 +40,8 @@ export const ADMIN_MODULE_DESCRIPTIONS: Record<AdminModuleKey, string> = {
   HELP: "Guía y glosario del administrador.",
   HOMEPAGE:
     "Banners, ofertas y bloques visuales de la tienda (zona de artículos y categorías destacados).",
+  MARKETING:
+    "Conexión con Google Ads, Meta Ads y analítica; métricas, embudo y configuración de píxeles.",
 };
 
 export const ADMIN_MODULES_ORDER: AdminModuleKey[] = [
@@ -49,6 +53,7 @@ export const ADMIN_MODULES_ORDER: AdminModuleKey[] = [
   "ROLES",
   "HELP",
   "HOMEPAGE",
+  "MARKETING",
 ];
 
 export function summarizePermissions(permissions: AdminPermission[]) {
@@ -73,6 +78,7 @@ export const ADMIN_PATH_MODULE: Record<string, AdminModuleKey> = {
   "/admin/roles": "ROLES",
   "/admin/ayuda": "HELP",
   "/admin/inicio": "HOMEPAGE",
+  "/admin/marketing": "MARKETING",
 };
 
 export function pathToModule(pathname: string): AdminModuleKey | null {

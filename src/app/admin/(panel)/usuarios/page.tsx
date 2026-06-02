@@ -2,6 +2,12 @@
 
 import { FormEvent, useCallback, useEffect, useState } from "react";
 import { useAdminPermissions } from "@/hooks/useAdminPermissions";
+import AdminAlert from "@/components/admin/ui/AdminAlert";
+import AdminButton from "@/components/admin/ui/AdminButton";
+import AdminLoadingSkeleton from "@/components/admin/ui/AdminLoadingSkeleton";
+import AdminPageHeader from "@/components/admin/ui/AdminPageHeader";
+import AdminPanel from "@/components/admin/ui/AdminPanel";
+import { adminInputClass, adminLabelClass, adminSelectClass, adminTableHeadClass, adminTableRowClass } from "@/lib/admin/ui";
 import { apiFetch } from "@/lib/api/client";
 import type { UserRole } from "@/lib/api/types";
 
@@ -114,118 +120,108 @@ export default function AdminUsuariosPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-neutral-900">Usuarios del admin</h1>
-          <p className="mt-1 text-sm text-neutral-600">
-            Cuentas con acceso al backoffice y rol de permisos asignado.
-          </p>
-        </div>
-        {canEdit ? (
-          <button
-            type="button"
-            onClick={() => setShowForm((v) => !v)}
-            className="rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white"
-          >
-            {showForm ? "Cerrar formulario" : "+ Nuevo usuario"}
-          </button>
-        ) : null}
-      </div>
+      <AdminPageHeader
+        eyebrow="Acceso"
+        title="Usuarios del admin"
+        description="Cuentas con acceso al backoffice y rol de permisos asignado."
+        actions={
+          canEdit ? (
+            <AdminButton
+              type="button"
+              variant={showForm ? "secondary" : "primary"}
+              onClick={() => setShowForm((v) => !v)}
+            >
+              {showForm ? "Cerrar formulario" : "+ Nuevo usuario"}
+            </AdminButton>
+          ) : undefined
+        }
+      />
 
-      {error ? (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
-      ) : null}
-      {message ? (
-        <p className="rounded-xl bg-green-50 px-4 py-3 text-sm text-green-800">{message}</p>
-      ) : null}
+      {error ? <AdminAlert variant="error">{error}</AdminAlert> : null}
+      {message ? <AdminAlert variant="success">{message}</AdminAlert> : null}
 
       {showForm && canEdit ? (
-        <form
-          onSubmit={onCreate}
-          className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm"
-        >
-          <h2 className="text-lg font-bold">Nuevo usuario</h2>
-          <div className="mt-4 grid gap-4 md:grid-cols-2">
-            <label className="text-sm">
-              <span className="font-medium">Correo</span>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 w-full rounded-xl border px-3 py-2.5 text-sm"
-              />
-            </label>
-            <label className="text-sm">
-              <span className="font-medium">Contraseña</span>
-              <input
-                type="password"
-                required
-                minLength={8}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 w-full rounded-xl border px-3 py-2.5 text-sm"
-              />
-            </label>
-            <label className="text-sm">
-              <span className="font-medium">Tipo de cuenta</span>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value as UserRole)}
-                className="mt-1 w-full rounded-xl border px-3 py-2.5 text-sm"
-              >
-                <option value="STAFF">Staff</option>
-                <option value="ADMIN">Admin</option>
-              </select>
-            </label>
-            <label className="text-sm">
-              <span className="font-medium">Rol de permisos</span>
-              <select
-                required
-                value={adminRoleId}
-                onChange={(e) => setAdminRoleId(e.target.value)}
-                className="mt-1 w-full rounded-xl border px-3 py-2.5 text-sm"
-              >
-                {roles.map((r) => (
-                  <option key={r.id} value={r.id}>
-                    {r.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="text-sm">
-              <span className="font-medium">Nombre</span>
-              <input
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                className="mt-1 w-full rounded-xl border px-3 py-2.5 text-sm"
-              />
-            </label>
-            <label className="text-sm">
-              <span className="font-medium">Apellido</span>
-              <input
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                className="mt-1 w-full rounded-xl border px-3 py-2.5 text-sm"
-              />
-            </label>
-          </div>
-          <button
-            type="submit"
-            disabled={saving}
-            className="mt-6 rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
-          >
-            {saving ? "Creando…" : "Crear usuario"}
-          </button>
-        </form>
+        <AdminPanel title="Nuevo usuario">
+          <form onSubmit={onCreate}>
+            <div className="grid gap-4 md:grid-cols-2">
+              <label className="text-sm">
+                <span className={adminLabelClass}>Correo</span>
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={adminInputClass}
+                />
+              </label>
+              <label className="text-sm">
+                <span className={adminLabelClass}>Contraseña</span>
+                <input
+                  type="password"
+                  required
+                  minLength={8}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={adminInputClass}
+                />
+              </label>
+              <label className="text-sm">
+                <span className={adminLabelClass}>Tipo de cuenta</span>
+                <select
+                  value={role}
+                  onChange={(e) => setRole(e.target.value as UserRole)}
+                  className={adminInputClass}
+                >
+                  <option value="STAFF">Staff</option>
+                  <option value="ADMIN">Admin</option>
+                </select>
+              </label>
+              <label className="text-sm">
+                <span className={adminLabelClass}>Rol de permisos</span>
+                <select
+                  required
+                  value={adminRoleId}
+                  onChange={(e) => setAdminRoleId(e.target.value)}
+                  className={adminInputClass}
+                >
+                  {roles.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="text-sm">
+                <span className={adminLabelClass}>Nombre</span>
+                <input
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  className={adminInputClass}
+                />
+              </label>
+              <label className="text-sm">
+                <span className={adminLabelClass}>Apellido</span>
+                <input
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  className={adminInputClass}
+                />
+              </label>
+            </div>
+            <AdminButton type="submit" disabled={saving} className="mt-6">
+              {saving ? "Creando…" : "Crear usuario"}
+            </AdminButton>
+          </form>
+        </AdminPanel>
       ) : null}
 
-      <div className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm">
+      <AdminPanel title="Usuarios registrados" noPadding>
         {loading ? (
-          <p className="p-6 text-sm text-neutral-500">Cargando…</p>
+          <AdminLoadingSkeleton rows={5} />
         ) : (
+          <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
-            <thead className="border-b bg-neutral-50 text-xs uppercase text-neutral-500">
+            <thead className={adminTableHeadClass}>
               <tr>
                 <th className="px-4 py-3">Usuario</th>
                 <th className="px-4 py-3">Rol permisos</th>
@@ -235,7 +231,7 @@ export default function AdminUsuariosPage() {
             </thead>
             <tbody>
               {users.map((u) => (
-                <tr key={u.id} className="border-b border-black/5">
+                <tr key={u.id} className={adminTableRowClass}>
                   <td className="px-4 py-3">
                     <p className="font-medium">{u.email}</p>
                     <p className="text-xs text-neutral-500">
@@ -251,7 +247,7 @@ export default function AdminUsuariosPage() {
                         onChange={(e) =>
                           void updateUser(u.id, { adminRoleId: e.target.value })
                         }
-                        className="rounded-lg border px-2 py-1 text-xs"
+                        className={adminSelectClass + " text-xs"}
                       >
                         <option value="">Sin rol</option>
                         {roles.map((r) => (
@@ -293,8 +289,9 @@ export default function AdminUsuariosPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
-      </div>
+      </AdminPanel>
     </div>
   );
 }

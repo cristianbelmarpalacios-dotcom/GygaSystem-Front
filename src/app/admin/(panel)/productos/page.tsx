@@ -26,11 +26,20 @@ import { parseDetailImageUrls } from "@/components/admin/ProductDetailImageUrlsF
 import { filterDetailImages, filterGalleryImages } from "@/lib/catalog/product-images";
 import ProductPrice from "@/components/catalog/ProductPrice";
 import { useAdminPermissions } from "@/hooks/useAdminPermissions";
+import AdminAlert from "@/components/admin/ui/AdminAlert";
+import AdminButton from "@/components/admin/ui/AdminButton";
+import AdminLoadingSkeleton from "@/components/admin/ui/AdminLoadingSkeleton";
+import AdminPageHeader from "@/components/admin/ui/AdminPageHeader";
+import AdminPanel from "@/components/admin/ui/AdminPanel";
+import {
+  adminFilterInputClass,
+  adminLabelClass,
+  adminSelectClass,
+  adminTableHeadClass,
+  adminTableRowClass,
+} from "@/lib/admin/ui";
 
 const PRODUCT_TYPES = Object.keys(PRODUCT_TYPE_LABELS) as ProductType[];
-
-const filterInputClass =
-  "w-full rounded-xl border border-neutral-200 bg-white px-3 py-2.5 text-sm shadow-sm transition-colors focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20";
 
 function matchesProductSearch(product: AdminProduct, query: string) {
   const q = query.trim().toLowerCase();
@@ -293,33 +302,28 @@ export default function AdminProductosPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-neutral-900">Productos</h1>
-          <p className="mt-1 text-sm text-neutral-600">
+      <AdminPageHeader
+        eyebrow="Catálogo"
+        title="Productos"
+        description={
+          <>
             Gestiona el catálogo: crear, editar y dar de baja sin borrar datos.{" "}
             <a href="/admin/ayuda#productos" className="font-semibold text-brand hover:text-brand-dark">
               Ayuda
             </a>
-          </p>
-        </div>
-        {canEdit ? (
-          <button
-            type="button"
-            onClick={openCreateModal}
-            className="shrink-0 rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white shadow-brand hover:bg-brand-dark"
-          >
-            + Crear producto
-          </button>
-        ) : null}
-      </div>
+          </>
+        }
+        actions={
+          canEdit ? (
+            <AdminButton type="button" onClick={openCreateModal}>
+              + Crear producto
+            </AdminButton>
+          ) : undefined
+        }
+      />
 
-      {error ? (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
-      ) : null}
-      {message ? (
-        <p className="rounded-xl bg-green-50 px-4 py-3 text-sm text-green-800">{message}</p>
-      ) : null}
+      {error ? <AdminAlert variant="error">{error}</AdminAlert> : null}
+      {message ? <AdminAlert variant="success">{message}</AdminAlert> : null}
 
       <AdminProductFormModal
         open={createOpen}
@@ -388,38 +392,31 @@ export default function AdminProductosPage() {
         onCancel={() => !archiving && setArchiveTarget(null)}
       />
 
-      <div className="space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <h2 className="text-lg font-bold text-neutral-900">Catálogo actual</h2>
-          <p className="text-sm text-neutral-500">
-            {filteredProducts.length === products.length
-              ? `${products.length} producto${products.length === 1 ? "" : "s"}`
-              : `${filteredProducts.length} de ${products.length} productos`}
-          </p>
-        </div>
-
-        <div className="rounded-2xl border border-black/5 bg-white p-4 shadow-sm">
+      <AdminPanel
+        title="Catálogo actual"
+        description={
+          filteredProducts.length === products.length
+            ? `${products.length} producto${products.length === 1 ? "" : "s"}`
+            : `${filteredProducts.length} de ${products.length} productos`
+        }
+      >
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
             <label className="sm:col-span-2 lg:col-span-2">
-              <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-neutral-500">
-                Buscar
-              </span>
+              <span className={adminLabelClass}>Buscar</span>
               <input
                 type="search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Nombre, slug, SKU o marca…"
-                className={filterInputClass}
+                className={adminFilterInputClass}
               />
             </label>
             <label>
-              <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-neutral-500">
-                Tipo
-              </span>
+              <span className={adminLabelClass}>Tipo</span>
               <select
                 value={typeFilter}
                 onChange={(e) => setTypeFilter(e.target.value as ProductType | "")}
-                className={filterInputClass}
+                className={adminFilterInputClass}
               >
                 <option value="">Todos</option>
                 {PRODUCT_TYPES.map((t) => (
@@ -430,13 +427,11 @@ export default function AdminProductosPage() {
               </select>
             </label>
             <label>
-              <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-neutral-500">
-                Marca
-              </span>
+              <span className={adminLabelClass}>Marca</span>
               <select
                 value={brandFilter}
                 onChange={(e) => setBrandFilter(e.target.value)}
-                className={filterInputClass}
+                className={adminFilterInputClass}
               >
                 <option value="">Todas</option>
                 {brands.map((b) => (
@@ -447,13 +442,11 @@ export default function AdminProductosPage() {
               </select>
             </label>
             <label>
-              <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-neutral-500">
-                Categoría
-              </span>
+              <span className={adminLabelClass}>Categoría</span>
               <select
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                className={filterInputClass}
+                className={adminFilterInputClass}
               >
                 <option value="">Todas</option>
                 {categories.map((c) => (
@@ -464,13 +457,13 @@ export default function AdminProductosPage() {
               </select>
             </label>
           </div>
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-black/5 pt-3">
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-neutral-100 pt-4">
             <label className="flex items-center gap-2 text-sm">
-              <span className="font-medium text-neutral-600">Estado:</span>
+              <span className={adminLabelClass + " mb-0"}>Estado</span>
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value as ProductStatus | "")}
-                className="rounded-xl border border-neutral-200 bg-white px-3 py-2 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20"
+                className={adminSelectClass}
               >
                 <option value="">Todos</option>
                 <option value="PUBLISHED">Solo vigentes</option>
@@ -487,12 +480,11 @@ export default function AdminProductosPage() {
               </button>
             ) : null}
           </div>
-        </div>
-      </div>
+      </AdminPanel>
 
-      <div className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm">
+      <AdminPanel noPadding>
         {loading ? (
-          <p className="p-6 text-sm text-neutral-500">Cargando…</p>
+          <AdminLoadingSkeleton rows={8} />
         ) : filteredProducts.length === 0 ? (
           <p className="p-6 text-sm text-neutral-500">
             {hasActiveFilters
@@ -502,7 +494,7 @@ export default function AdminProductosPage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[900px] text-left text-sm">
-              <thead className="border-b border-black/5 bg-neutral-50 text-xs uppercase text-neutral-500">
+              <thead className={adminTableHeadClass}>
                 <tr>
                   <th className="px-4 py-3">Producto</th>
                   <th className="px-4 py-3">Tipo</th>
@@ -525,7 +517,7 @@ export default function AdminProductosPage() {
                   return (
                     <tr
                       key={p.id}
-                      className={`border-b border-black/5 ${!isVigente ? "bg-neutral-50/80" : ""}`}
+                      className={`${adminTableRowClass} ${!isVigente ? "bg-neutral-50/80" : ""}`}
                     >
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-3">
@@ -676,7 +668,7 @@ export default function AdminProductosPage() {
             </table>
           </div>
         )}
-      </div>
+      </AdminPanel>
     </div>
   );
 }

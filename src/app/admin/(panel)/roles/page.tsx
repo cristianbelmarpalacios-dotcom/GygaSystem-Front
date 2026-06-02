@@ -8,6 +8,10 @@ import RoleEditorModal, {
 } from "@/components/admin/RoleEditorModal";
 import { useAdminPermissions } from "@/hooks/useAdminPermissions";
 import { apiFetch } from "@/lib/api/client";
+import AdminAlert from "@/components/admin/ui/AdminAlert";
+import AdminButton from "@/components/admin/ui/AdminButton";
+import AdminLoadingSkeleton from "@/components/admin/ui/AdminLoadingSkeleton";
+import AdminPageHeader from "@/components/admin/ui/AdminPageHeader";
 import {
   ADMIN_MODULES_ORDER,
   ADMIN_MODULE_LABELS,
@@ -144,36 +148,26 @@ export default function AdminRolesPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-neutral-900">Perfiles y permisos</h1>
-          <p className="mt-1 max-w-xl text-sm text-neutral-600">
-            Cada tarjeta es un perfil que puedes asignar a usuarios. Abre un perfil para
-            configurar pantalla por pantalla qué puede ver, editar o eliminar.
-          </p>
-        </div>
-        {canEdit ? (
-          <button
-            type="button"
-            onClick={openCreate}
-            className="shrink-0 rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white shadow-brand hover:bg-brand-dark"
-          >
-            + Nuevo perfil
-          </button>
-        ) : null}
-      </div>
+      <AdminPageHeader
+        eyebrow="Acceso"
+        title="Perfiles y permisos"
+        description="Cada tarjeta es un perfil que puedes asignar a usuarios. Abre un perfil para configurar pantalla por pantalla qué puede ver, editar o eliminar."
+        actions={
+          canEdit ? (
+            <AdminButton type="button" onClick={openCreate}>
+              + Nuevo perfil
+            </AdminButton>
+          ) : undefined
+        }
+      />
 
-      {error ? (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
-      ) : null}
-      {message ? (
-        <p className="rounded-xl bg-green-50 px-4 py-3 text-sm text-green-800">{message}</p>
-      ) : null}
+      {error ? <AdminAlert variant="error">{error}</AdminAlert> : null}
+      {message ? <AdminAlert variant="success">{message}</AdminAlert> : null}
 
       {loading ? (
-        <p className="text-sm text-neutral-500">Cargando perfiles…</p>
+        <AdminLoadingSkeleton rows={3} />
       ) : roles.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-neutral-300 bg-white p-12 text-center">
+        <div className="rounded-2xl border border-dashed border-neutral-200 bg-white p-12 text-center shadow-sm">
           <p className="text-neutral-600">Aún no hay perfiles personalizados.</p>
           {canEdit ? (
             <button
@@ -196,7 +190,7 @@ export default function AdminRolesPage() {
             return (
               <article
                 key={role.id}
-                className="group flex flex-col rounded-2xl border border-black/5 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+                className="group flex flex-col rounded-2xl border border-black/[0.06] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition-shadow hover:shadow-md"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div>

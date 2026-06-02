@@ -2,10 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import AdminPageHeader from "@/components/admin/ui/AdminPageHeader";
+import AdminPanel from "@/components/admin/ui/AdminPanel";
+import AdminStatCard from "@/components/admin/ui/AdminStatCard";
 import { useAdminPermissions } from "@/hooks/useAdminPermissions";
 import { apiFetch } from "@/lib/api/client";
 import type { AdminOrder, AdminProduct, OrderStatus } from "@/lib/api/types";
 import { ORDER_STATUS_LABELS, formatMoney } from "@/lib/admin/format";
+import { adminButtonClass } from "@/components/admin/ui/AdminButton";
 
 export default function AdminDashboardPage() {
   const { can } = useAdminPermissions();
@@ -43,80 +47,102 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-neutral-900">Resumen</h1>
-        <p className="mt-1 text-sm text-neutral-600">
-          Vista general según los permisos de tu perfil.
-        </p>
-      </div>
+      <AdminPageHeader
+        eyebrow="Panel de control"
+        title="Resumen"
+        description="Vista general de pedidos y catálogo según los permisos de tu perfil."
+      />
 
       {loading ? (
-        <p className="text-sm text-neutral-500">Cargando datos…</p>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="h-28 animate-pulse rounded-2xl bg-neutral-200/50" />
+          ))}
+        </div>
       ) : (
         <>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             {canOrders ? (
               <>
-                <StatCard label="Pedidos totales" value={String(orders.length)} />
-                <StatCard label="Por cobrar" value={String(byStatus("AWAITING_PAYMENT"))} />
-                <StatCard label="Pagados" value={String(byStatus("PAID"))} />
+                <AdminStatCard
+                  tone="brand"
+                  label="Pedidos totales"
+                  value={String(orders.length)}
+                />
+                <AdminStatCard
+                  tone="warn"
+                  label="Por cobrar"
+                  value={String(byStatus("AWAITING_PAYMENT"))}
+                />
+                <AdminStatCard
+                  tone="store"
+                  label="Pagados"
+                  value={String(byStatus("PAID"))}
+                />
               </>
             ) : null}
             {canProducts ? (
-              <StatCard
+              <AdminStatCard
+                tone="neutral"
                 label="Productos publicados"
                 value={`${published} / ${products.length}`}
               />
             ) : null}
             {!canOrders && !canProducts ? (
-              <div className="rounded-2xl border border-black/5 bg-white p-5 text-sm text-neutral-600 sm:col-span-2 xl:col-span-4">
-                Tu perfil no incluye datos de pedidos ni productos en el resumen. Usa el menú
-                lateral para ir a las secciones permitidas.
-              </div>
+              <AdminPanel className="sm:col-span-2 xl:col-span-4">
+                <p className="text-sm text-neutral-600">
+                  Tu perfil no incluye datos de pedidos ni productos. Usa el menú
+                  lateral para ir a las secciones permitidas.
+                </p>
+              </AdminPanel>
             ) : null}
           </div>
 
           {canOrders ? (
-            <section className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm">
-              <div className="flex items-center justify-between gap-4">
-                <h2 className="text-lg font-bold text-neutral-900">Últimos pedidos</h2>
+            <AdminPanel
+              title="Últimos pedidos"
+              actions={
                 <Link
                   href="/admin/pedidos"
                   className="text-sm font-semibold text-brand hover:text-brand-dark"
                 >
                   Ver todos →
                 </Link>
-              </div>
+              }
+              noPadding
+            >
               {orders.length === 0 ? (
-                <p className="mt-4 text-sm text-neutral-500">Aún no hay pedidos registrados.</p>
+                <p className="p-6 text-sm text-neutral-500">
+                  Aún no hay pedidos registrados.
+                </p>
               ) : (
-                <ul className="mt-4 divide-y divide-black/5">
+                <ul className="divide-y divide-neutral-100">
                   {orders.slice(0, 5).map((order) => (
                     <li
                       key={order.id}
-                      className="flex flex-wrap items-center justify-between gap-2 py-3 text-sm"
+                      className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 text-sm transition-colors hover:bg-brand/[0.02]"
                     >
-                      <span className="font-mono font-medium text-neutral-800">
+                      <span className="font-mono text-xs font-semibold text-neutral-800">
                         {order.orderNumber}
                       </span>
-                      <span className="text-neutral-600">
+                      <span className="rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-semibold text-neutral-700">
                         {ORDER_STATUS_LABELS[order.status]}
                       </span>
-                      <span className="font-semibold text-neutral-900">
+                      <span className="font-bold tabular-nums text-neutral-900">
                         {formatMoney(order.grandTotal, order.currency)}
                       </span>
                     </li>
                   ))}
                 </ul>
               )}
-            </section>
+            </AdminPanel>
           ) : null}
 
           <div className="flex flex-wrap gap-3">
             {canOrders ? (
               <Link
                 href="/admin/pedidos"
-                className="rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white shadow-brand hover:bg-brand-dark"
+                className={`inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold ${adminButtonClass.primary}`}
               >
                 Gestionar pedidos
               </Link>
@@ -124,7 +150,7 @@ export default function AdminDashboardPage() {
             {canProducts ? (
               <Link
                 href="/admin/productos"
-                className="rounded-xl border border-neutral-200 bg-white px-5 py-2.5 text-sm font-semibold text-neutral-800 hover:border-brand/30"
+                className={`inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold ${adminButtonClass.secondary}`}
               >
                 Gestionar productos
               </Link>
@@ -132,7 +158,7 @@ export default function AdminDashboardPage() {
             {can("CATEGORIES", "view") ? (
               <Link
                 href="/admin/categorias"
-                className="rounded-xl border border-neutral-200 bg-white px-5 py-2.5 text-sm font-semibold text-neutral-800 hover:border-brand/30"
+                className={`inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold ${adminButtonClass.secondary}`}
               >
                 Gestionar categorías
               </Link>
@@ -140,15 +166,6 @@ export default function AdminDashboardPage() {
           </div>
         </>
       )}
-    </div>
-  );
-}
-
-function StatCard({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-2xl border border-black/5 bg-white p-5 shadow-sm">
-      <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">{label}</p>
-      <p className="mt-2 text-2xl font-bold text-neutral-900">{value}</p>
     </div>
   );
 }

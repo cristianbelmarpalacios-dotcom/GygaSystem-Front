@@ -17,9 +17,12 @@ import {
   DEFAULT_WELCOME_OVERLAY_OPACITY,
   resolveWelcomeBackgroundStyle,
 } from "@/lib/homepage/welcome-background";
+import AdminAlert from "@/components/admin/ui/AdminAlert";
+import AdminPageHeader from "@/components/admin/ui/AdminPageHeader";
+import AdminSegmentTabs from "@/components/admin/ui/AdminSegmentTabs";
+import { adminInputClass } from "@/lib/admin/ui";
 
-const inputClass =
-  "mt-1 w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm";
+const inputClass = adminInputClass;
 
 type Tab = "welcome" | "strip" | "deals" | "grid" | "hero";
 
@@ -308,44 +311,29 @@ export default function AdminInicioPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold text-neutral-900">
-          {ADMIN_MODULE_LABELS.HOMEPAGE}
-        </h1>
-        <p className="mt-1 text-sm text-neutral-600">
-          {ADMIN_MODULE_DESCRIPTIONS.HOMEPAGE} El carrusel de ofertas se arma solo con
-          productos que tienen precio de comparación mayor al precio de venta.
-        </p>
-        <p className="mt-2 rounded-xl bg-neutral-50 px-4 py-3 text-sm text-neutral-700">
+      <AdminPageHeader
+        eyebrow="Tienda"
+        title={ADMIN_MODULE_LABELS.HOMEPAGE}
+        description={
+          <>
+            {ADMIN_MODULE_DESCRIPTIONS.HOMEPAGE} El carrusel de ofertas se arma solo con
+            productos que tienen precio de comparación mayor al precio de venta.
+          </>
+        }
+      >
+        <p className="mt-3 rounded-xl border border-neutral-100 bg-neutral-50/80 px-4 py-3 text-sm text-neutral-700">
           Orden en la tienda: <strong>portada</strong> → banner alargado → ofertas
           + carrusel → catálogo de productos → <strong>nuevos productos</strong> → banner grande.
         </p>
-      </div>
+      </AdminPageHeader>
 
-      {error ? (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
-      ) : null}
-      {message ? (
-        <p className="rounded-xl bg-green-50 px-4 py-3 text-sm text-green-800">{message}</p>
-      ) : null}
+      {error ? <AdminAlert variant="error">{error}</AdminAlert> : null}
+      {message ? <AdminAlert variant="success">{message}</AdminAlert> : null}
 
-      <div className="flex flex-wrap gap-2 border-b border-black/5 pb-2">
-        {tabs.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            onClick={() => {
-              setTab(t.id);
-              setSectionMetaOpen(false);
-            }}
-            className={`rounded-xl px-4 py-2 text-sm font-semibold ${
-              tab === t.id ? "bg-brand text-white" : "bg-neutral-100 text-neutral-700"
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
+      <AdminSegmentTabs tabs={tabs} active={tab} onChange={(id) => {
+        setTab(id);
+        setSectionMetaOpen(false);
+      }} />
 
       {loading ? (
         <p className="text-sm text-neutral-500">Cargando…</p>
