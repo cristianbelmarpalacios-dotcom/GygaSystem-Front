@@ -2,10 +2,7 @@
 
 import Link from "next/link";
 import type { HomeTile } from "@/lib/homepage/types";
-import {
-  FEATURED_PRODUCT_CARD_HEIGHT_PX,
-  FEATURED_PRODUCT_CARD_WIDTH_PX,
-} from "@/lib/catalog/product-card-layout";
+import { featuredCarouselCardWidthClass } from "@/lib/catalog/product-card-layout";
 
 const BADGE_COLORS = [
   "bg-[#e91e8c]",
@@ -25,11 +22,7 @@ export default function HomeFeaturedProductCard({ tile, index }: Props) {
   return (
     <Link
       href={tile.linkUrl}
-      className="group relative shrink-0 overflow-hidden rounded-2xl bg-neutral-900 shadow-lg transition-transform hover:scale-[1.02]"
-      style={{
-        width: FEATURED_PRODUCT_CARD_WIDTH_PX,
-        height: FEATURED_PRODUCT_CARD_HEIGHT_PX,
-      }}
+      className={`group relative shrink-0 snap-start overflow-hidden rounded-2xl bg-neutral-900 shadow-lg transition-transform active:scale-[0.99] sm:hover:scale-[1.02] ${featuredCarouselCardWidthClass} aspect-[3/4] min-h-[17.5rem] sm:min-h-[23.75rem]`}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -39,16 +32,16 @@ export default function HomeFeaturedProductCard({ tile, index }: Props) {
       />
       <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/5" />
 
-      <div className="relative flex h-full flex-col justify-end p-4">
+      <div className="relative flex h-full flex-col justify-end p-3 sm:p-4">
         {tile.eyebrow ? (
-          <p className="text-xs font-medium text-white/90 md:text-sm">{tile.eyebrow}</p>
+          <p className="text-xs font-medium text-white/90 sm:text-sm">{tile.eyebrow}</p>
         ) : null}
-        <p className="mt-1 line-clamp-3 text-lg font-bold leading-snug text-white">
+        <p className="mt-1 line-clamp-3 text-base font-bold leading-snug text-white sm:text-lg">
           {tile.title}
         </p>
         {tile.priceLabel ? (
           <span
-            className={`mt-3 inline-flex w-full items-center justify-center rounded-lg px-3 py-2.5 text-center text-sm font-bold text-white ${badgeColor}`}
+            className={`mt-2 inline-flex w-full items-center justify-center rounded-lg px-3 py-2.5 text-center text-sm font-bold text-white sm:mt-3 ${badgeColor}`}
           >
             {tile.priceLabel}
           </span>

@@ -4,9 +4,8 @@ import Link from "next/link";
 import type { PublicProduct } from "@/lib/catalog/types";
 import { filterGalleryImages } from "@/lib/catalog/product-images";
 import {
-  COMPACT_CARD_HEIGHT_PX,
-  COMPACT_CARD_SQUARE_PX,
-  COMPACT_CARD_WIDTH_PX,
+  carouselCardWidthClass,
+  COMPACT_CARD_HEIGHT_CLASS,
 } from "@/lib/catalog/product-card-layout";
 import { formatDiscountLabel, getVariantPricing } from "@/lib/catalog/pricing";
 import { formatMoney } from "@/lib/admin/format";
@@ -26,16 +25,9 @@ export default function HomeDealCard({ product }: Props) {
   return (
     <Link
       href={`/producto/${product.slug}`}
-      className="group flex shrink-0 flex-col overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm transition-shadow hover:shadow-md"
-      style={{
-        width: COMPACT_CARD_WIDTH_PX,
-        height: COMPACT_CARD_HEIGHT_PX,
-      }}
+      className={`group flex shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm transition-shadow hover:shadow-md ${carouselCardWidthClass} ${COMPACT_CARD_HEIGHT_CLASS}`}
     >
-      <div
-        className="relative shrink-0 bg-neutral-50 p-2"
-        style={{ height: COMPACT_CARD_SQUARE_PX }}
-      >
+      <div className="relative aspect-square w-full shrink-0 bg-neutral-50 p-2">
         {discount ? (
           <span className="absolute left-2 top-2 z-10 rounded-md bg-teal-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
             {discount}
@@ -54,17 +46,14 @@ export default function HomeDealCard({ product }: Props) {
           </div>
         )}
       </div>
-      <div
-        className="flex shrink-0 flex-col p-3"
-        style={{ height: COMPACT_CARD_SQUARE_PX }}
-      >
-        <h3 className="line-clamp-3 text-xs font-semibold leading-snug text-neutral-900">
+      <div className="flex min-h-0 flex-1 flex-col p-3">
+        <h3 className="line-clamp-3 text-sm font-semibold leading-snug text-neutral-900 sm:text-xs">
           {product.name}
         </h3>
         {pricing ? (
           <div className="mt-auto pt-2">
             {pricing.onSale && pricing.comparePrice ? (
-              <p className="text-[10px] text-neutral-400 line-through">
+              <p className="text-xs text-neutral-400 line-through sm:text-[10px]">
                 {formatMoney(pricing.comparePrice)}
               </p>
             ) : null}

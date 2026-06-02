@@ -10,11 +10,22 @@ export const PROMO_DEAL_WIDTH_PX = 280;
 export const FEATURED_PRODUCT_CARD_WIDTH_PX = 240;
 export const FEATURED_PRODUCT_CARD_HEIGHT_PX = 380;
 
-/** Ancho fijo de la tarjeta en catálogo */
-export const COMPACT_CARD_WIDTH_CLASS = "w-[12.75rem]";
+/** Ancho: llena la celda en móvil (2 cols), fijo en desktop */
+export const COMPACT_CARD_WIDTH_CLASS = "w-full sm:w-[12.75rem]";
 
-/** Altura fija para que todas las tarjetas calcen en la grilla */
-export const COMPACT_CARD_HEIGHT_CLASS = "h-[26.5rem]";
+/** Altura: flexible en móvil para textos; fija en desktop */
+export const COMPACT_CARD_HEIGHT_CLASS =
+  "min-h-[21.5rem] h-full sm:min-h-0 sm:h-[26.5rem]";
 
+/**
+ * Móvil: 2 columnas. Desktop: auto-fill con ancho mínimo de tarjeta.
+ */
 export const compactProductGridClass =
-  "grid grid-cols-[repeat(auto-fill,minmax(12.75rem,1fr))] items-stretch gap-x-2.5 gap-y-4 sm:gap-x-3";
+  "grid grid-cols-2 items-stretch gap-x-2 gap-y-4 sm:grid-cols-[repeat(auto-fill,minmax(12.75rem,1fr))] sm:gap-x-3 sm:gap-y-4";
+
+/** Carruseles horizontales: ancho de slide en móvil vs desktop */
+export const carouselCardWidthClass =
+  "w-[min(100%,12.75rem)] min-w-[9.5rem] max-w-[12.75rem] sm:w-[12.75rem]";
+
+export const featuredCarouselCardWidthClass =
+  "w-[min(85vw,15rem)] min-w-[10.5rem] max-w-[15rem] sm:w-[15rem]";

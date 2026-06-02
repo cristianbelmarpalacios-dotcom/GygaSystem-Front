@@ -63,8 +63,8 @@ export default function CategoryCatalogExplorer({ category }: Props) {
             ← {category.parent.name}
           </Link>
         ) : null}
-        <BrandLogo variant="horizontal" className="mb-3 mt-2" />
-        <h1 className="text-2xl font-bold text-neutral-900 md:text-3xl">
+        <BrandLogo variant="horizontal" className="mb-3 mt-2 max-h-8 w-auto sm:max-h-none" />
+        <h1 className="text-xl font-bold text-neutral-900 sm:text-2xl md:text-3xl">
           {category.name}
         </h1>
         {category.description ? (

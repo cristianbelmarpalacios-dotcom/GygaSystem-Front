@@ -73,7 +73,7 @@ export default function ProductDetailView({ product, preview = false }: Props) {
           <p className="text-xs font-semibold uppercase tracking-wide text-brand-dark">
             {PRODUCT_TYPE_LABELS[product.type]}
           </p>
-          <h1 className="mt-2 text-2xl font-bold text-neutral-900 md:text-3xl">
+          <h1 className="mt-2 text-xl font-bold leading-tight text-neutral-900 sm:text-2xl md:text-3xl">
             {product.name}
           </h1>
 

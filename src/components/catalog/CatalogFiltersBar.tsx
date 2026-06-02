@@ -66,7 +66,7 @@ export default function CatalogFiltersBar({
         ) : null}
       </div>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-4 grid grid-cols-1 gap-3 min-[480px]:grid-cols-2 lg:grid-cols-4">
         <label className="block sm:col-span-2 lg:col-span-1">
           <span className="mb-1 block text-xs font-semibold text-neutral-600">
             Buscar

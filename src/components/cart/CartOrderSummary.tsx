@@ -20,9 +20,13 @@ const DEMO_COUPONS: Record<string, number> = {
 
 type Props = {
   className?: string;
+  variant?: "full" | "compact";
 };
 
-export default function CartOrderSummary({ className = "" }: Props) {
+export default function CartOrderSummary({
+  className = "",
+  variant = "full",
+}: Props) {
   const { items, itemCount, subtotal } = useCart();
   const [couponInput, setCouponInput] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
@@ -54,6 +58,28 @@ export default function CartOrderSummary({ className = "" }: Props) {
     setAppliedCoupon(null);
     setCouponInput("");
     setCouponError(null);
+  }
+
+  if (variant === "compact") {
+    return (
+      <div className={`flex items-center gap-3 ${className}`}>
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-bold uppercase tracking-wide text-brand-light">
+            Total estimado
+          </p>
+          <p className="text-xl font-bold text-white">{formatMoney(total)}</p>
+          <p className="text-[11px] text-neutral-500">
+            {itemCount} {itemCount === 1 ? "producto" : "productos"}
+          </p>
+        </div>
+        <Link
+          href="/carrito/pagar"
+          className={`shrink-0 px-6 py-3.5 ${cartPrimaryBtnLg} !w-auto`}
+        >
+          Ir a pagar
+        </Link>
+      </div>
+    );
   }
 
   return (

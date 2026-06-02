@@ -78,7 +78,7 @@ export default function CheckoutView() {
       </Link>
 
       <p className={`mt-6 ${cartEyebrow}`}>Checkout</p>
-      <h1 className="mt-1 text-2xl font-bold uppercase tracking-tight text-neutral-900 md:text-3xl">
+      <h1 className="mt-1 text-xl font-bold uppercase tracking-tight text-neutral-900 sm:text-2xl md:text-3xl">
         Finalizar compra
       </h1>
       <p className="mt-1 text-sm text-neutral-600">

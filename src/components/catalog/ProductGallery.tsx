@@ -49,15 +49,15 @@ export default function ProductGallery({ images, productName }: Props) {
       </div>
 
       {sorted.length > 1 ? (
-        <ul className="flex gap-2 overflow-x-auto pb-1">
+        <ul className="flex gap-2 overflow-x-auto pb-1 snap-x snap-mandatory [-webkit-overflow-scrolling:touch]">
           {sorted.map((img) => {
             const selected = img.id === active.id;
             return (
-              <li key={img.id} className="shrink-0">
+              <li key={img.id} className="shrink-0 snap-start">
                 <button
                   type="button"
                   onClick={() => setActiveId(img.id)}
-                  className={`block h-16 w-16 overflow-hidden rounded-lg border-2 bg-white p-1 transition-colors ${
+                  className={`block h-20 w-20 overflow-hidden rounded-lg border-2 bg-white p-1 transition-colors sm:h-16 sm:w-16 ${
                     selected
                       ? "border-brand ring-2 ring-brand/20"
                       : "border-neutral-200 hover:border-neutral-300"

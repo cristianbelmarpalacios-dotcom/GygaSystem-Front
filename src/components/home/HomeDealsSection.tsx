@@ -5,10 +5,6 @@ import Link from "next/link";
 import type { HomePromo, HomeSection } from "@/lib/homepage/types";
 import type { PublicProduct } from "@/lib/catalog/types";
 import { sortDealProducts } from "@/lib/catalog/deal-products";
-import {
-  COMPACT_CARD_HEIGHT_PX,
-  PROMO_DEAL_WIDTH_PX,
-} from "@/lib/catalog/product-card-layout";
 import HomeDealCard from "@/components/home/HomeDealCard";
 import ProductCarousel from "@/components/home/ProductCarousel";
 
@@ -23,10 +19,10 @@ export default function HomeDealsSection({ section, deals }: Props) {
   if (!promo && sortedDeals.length === 0) return null;
 
   return (
-    <section className="border-b border-black/5 bg-white py-12 md:py-16">
+    <section className="border-b border-black/5 bg-white py-10 sm:py-12 md:py-16">
       <div className="mx-auto max-w-page px-4 sm:px-6 lg:px-8">
         {section.title ? (
-          <h2 className="text-center text-2xl font-bold text-brand-dark md:text-3xl">
+          <h2 className="text-center text-xl font-bold text-brand-dark sm:text-2xl md:text-3xl">
             {section.title}
           </h2>
         ) : null}
@@ -36,18 +32,13 @@ export default function HomeDealsSection({ section, deals }: Props) {
           </p>
         ) : null}
 
-        <div className="mt-8 flex flex-col gap-4 lg:flex-row lg:items-stretch">
+        <div className="mt-6 flex flex-col gap-4 sm:mt-8 lg:flex-row lg:items-stretch">
           {promo ? (
             <Link
               href={promo.linkUrl}
-              className="group flex shrink-0 flex-row overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm transition-shadow hover:shadow-md"
-              style={{
-                width: PROMO_DEAL_WIDTH_PX,
-                height: COMPACT_CARD_HEIGHT_PX,
-                maxWidth: "100%",
-              }}
+              className="group flex w-full shrink-0 flex-col overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm transition-shadow hover:shadow-md sm:flex-row lg:w-[17.5rem] lg:flex-col xl:w-[17.5rem] xl:flex-row"
             >
-              <div className="relative h-full min-w-0 flex-[3] bg-neutral-50">
+              <div className="relative aspect-[16/10] w-full bg-neutral-50 sm:aspect-auto sm:min-h-[12rem] sm:flex-[3] lg:aspect-[4/3] lg:min-h-0">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={promo.imageUrl}
@@ -55,7 +46,7 @@ export default function HomeDealsSection({ section, deals }: Props) {
                   className="h-full w-full object-cover transition-transform group-hover:scale-[1.02]"
                 />
               </div>
-              <div className="flex h-full min-w-0 flex-[2] flex-col items-center justify-center border-l border-black/5 bg-neutral-50 p-3 text-center">
+              <div className="flex flex-col items-center justify-center border-t border-black/5 bg-neutral-50 p-4 text-center sm:min-h-[12rem] sm:flex-[2] sm:border-l sm:border-t-0 sm:p-3 lg:border-l-0 lg:border-t lg:min-h-0">
                 {promo.heading ? (
                   <p className="text-sm font-bold leading-snug text-neutral-900">
                     {promo.heading}
@@ -73,20 +64,9 @@ export default function HomeDealsSection({ section, deals }: Props) {
                 ) : null}
               </div>
             </Link>
-          ) : (
-            <div
-              className="hidden shrink-0 rounded-2xl border border-dashed border-neutral-200 bg-neutral-50 lg:block"
-              style={{
-                width: PROMO_DEAL_WIDTH_PX,
-                height: COMPACT_CARD_HEIGHT_PX,
-              }}
-            />
-          )}
+          ) : null}
 
-          <div
-            className="flex min-w-0 flex-1 items-stretch"
-            style={{ minHeight: COMPACT_CARD_HEIGHT_PX }}
-          >
+          <div className="flex min-w-0 flex-1 items-stretch">
             {sortedDeals.length > 0 ? (
               <ProductCarousel ariaLabel="Productos en oferta" className="w-full">
                 {sortedDeals.map((product) => (

@@ -36,7 +36,7 @@ export default function CartPageView() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-page px-4 py-8 sm:px-6 md:py-10 lg:px-8">
+    <div className="mx-auto w-full max-w-page px-4 py-8 pb-28 sm:px-6 sm:pb-8 md:py-10 lg:px-8">
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-brand/20 pb-6">
         <div>
           <p className={cartEyebrow}>Tu compra</p>
@@ -62,8 +62,11 @@ export default function CartPageView() {
             const lineTotal = item.price * item.quantity;
             return (
               <article key={item.variantId} className={cartItemCard}>
-                <Link href={`/producto/${item.productSlug}`} className="shrink-0">
-                  <div className="mx-auto h-28 w-28 overflow-hidden rounded-lg border border-white/10 bg-white/10 sm:mx-0">
+                <Link
+                  href={`/producto/${item.productSlug}`}
+                  className="mx-auto shrink-0 sm:mx-0"
+                >
+                  <div className="h-32 w-32 overflow-hidden rounded-lg border border-white/10 bg-white/10 sm:h-28 sm:w-28">
                     {item.imageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -105,7 +108,7 @@ export default function CartPageView() {
                     {formatMoney(item.price)} c/u · {item.maxStock} en stock
                   </p>
 
-                  <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                  <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                     <QuantitySelector
                       value={item.quantity}
                       max={item.maxStock}
@@ -113,7 +116,7 @@ export default function CartPageView() {
                       size="md"
                       theme="dark"
                     />
-                    <div className="flex items-center gap-4">
+                    <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                       <Link
                         href={`/producto/${item.productSlug}`}
                         className="text-sm font-semibold uppercase tracking-wide text-brand-light hover:text-white"
@@ -137,7 +140,11 @@ export default function CartPageView() {
           {show3d ? <CartPCPreview items={items} /> : null}
         </div>
 
-        <CartOrderSummary />
+        <CartOrderSummary className="hidden lg:block" />
+      </div>
+
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-neutral-950/95 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-[0_-8px_32px_rgba(0,0,0,0.4)] backdrop-blur-md lg:hidden">
+        <CartOrderSummary variant="compact" />
       </div>
     </div>
   );

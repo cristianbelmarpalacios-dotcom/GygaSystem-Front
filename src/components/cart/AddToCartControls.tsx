@@ -74,7 +74,7 @@ export default function AddToCartControls({
   if (layout === "narrow") {
     return (
       <div
-        className="flex min-w-0 items-center gap-1.5"
+        className="flex min-w-0 items-center gap-1 sm:gap-1.5"
         onClick={(e) => e.preventDefault()}
         onKeyDown={(e) => e.stopPropagation()}
       >
@@ -82,19 +82,19 @@ export default function AddToCartControls({
           value={quantity}
           max={pricing.stock}
           onChange={setQuantity}
-          size="xs"
+          size="sm"
         />
         <button
           type="button"
           onClick={handleAdd}
           title={justAdded ? "Agregado" : "Agregar al carrito"}
           aria-label={justAdded ? "Agregado al carrito" : "Agregar al carrito"}
-          className={`flex h-7 w-8 shrink-0 items-center justify-center rounded-lg text-white transition-all duration-200 active:scale-[0.98] ${compactBtnClass}`}
+          className={`flex h-9 w-10 shrink-0 items-center justify-center rounded-lg text-white transition-all duration-200 active:scale-[0.98] sm:h-7 sm:w-8 ${compactBtnClass}`}
         >
           {justAdded ? (
-            <CheckIcon className="h-3.5 w-3.5" />
+            <CheckIcon className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
           ) : (
-            <CartIcon className="h-3.5 w-3.5" />
+            <CartIcon className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
           )}
         </button>
       </div>

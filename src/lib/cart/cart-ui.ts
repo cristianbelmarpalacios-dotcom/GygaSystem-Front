@@ -19,7 +19,7 @@ export const cartPanelHeader =
   "border-b border-white/10 bg-gradient-to-r from-neutral-950 via-neutral-900 to-brand/30 px-5 py-5";
 
 export const cartItemCard =
-  "flex gap-3 rounded-xl border border-white/10 bg-white/5 p-3 backdrop-blur-sm transition-colors hover:border-brand/30 hover:bg-white/[0.08]";
+  "flex flex-col gap-3 rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur-sm transition-colors hover:border-brand/30 hover:bg-white/[0.08] sm:flex-row sm:gap-3 sm:p-3";
 
 export const cartInput =
   "w-full rounded-lg border border-white/15 bg-white/5 px-3 py-2.5 text-sm text-white placeholder:text-neutral-500 focus:border-brand-light focus:outline-none focus:ring-2 focus:ring-brand/30";
