@@ -6,11 +6,12 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
 import type { ProductType } from "@/lib/api/types";
-import { CART_STORAGE_KEY } from "@/lib/cart/constants";
+import { CART_DRAWER_AUTO_SHOWN_KEY, CART_STORAGE_KEY } from "@/lib/cart/constants";
 import type { Pc3dBuilderSlot, Pc3dCaseVariant } from "@/lib/catalog/pc3d";
 
 export type CartItem = {
@@ -38,6 +39,8 @@ type CartContextValue = {
   itemCount: number;
   subtotal: number;
   isOpen: boolean;
+  /** Incrementa cuando el carrito gana unidades (para animar el icono del header). */
+  pulseKey: number;
   openCart: () => void;
   closeCart: () => void;
   toggleCart: () => void;
@@ -65,6 +68,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  const [pulseKey, setPulseKey] = useState(0);
+  const prevItemCountRef = useRef<number | null>(null);
 
   useEffect(() => {
     setItems(loadStoredItems());
@@ -74,6 +79,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!hydrated) return;
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+  }, [items, hydrated]);
+
+  useEffect(() => {
+    if (!hydrated) return;
+    const count = items.reduce((acc, i) => acc + i.quantity, 0);
+    if (prevItemCountRef.current !== null && count > prevItemCountRef.current) {
+      setPulseKey((k) => k + 1);
+    }
+    prevItemCountRef.current = count;
   }, [items, hydrated]);
 
   const addItem = useCallback((item: AddItemInput) => {
@@ -94,7 +108,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
         },
       ];
     });
-    setIsOpen(true);
+
+    if (typeof window === "undefined") return;
+    try {
+      if (!sessionStorage.getItem(CART_DRAWER_AUTO_SHOWN_KEY)) {
+        sessionStorage.setItem(CART_DRAWER_AUTO_SHOWN_KEY, "1");
+        setIsOpen(true);
+      }
+    } catch {
+      /* sessionStorage no disponible */
+    }
   }, []);
 
   const removeItem = useCallback((variantId: string) => {
@@ -123,6 +146,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       itemCount,
       subtotal,
       isOpen,
+      pulseKey,
       openCart: () => setIsOpen(true),
       closeCart: () => setIsOpen(false),
       toggleCart: () => setIsOpen((o) => !o),
@@ -131,7 +155,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       updateQuantity,
       clearCart,
     };
-  }, [items, isOpen, addItem, removeItem, updateQuantity, clearCart]);
+  }, [items, isOpen, pulseKey, addItem, removeItem, updateQuantity, clearCart]);
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }

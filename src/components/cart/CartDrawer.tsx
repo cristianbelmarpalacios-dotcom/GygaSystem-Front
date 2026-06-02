@@ -125,9 +125,22 @@ export default function CartDrawer() {
                       <p className="mt-0.5 text-xs text-neutral-400">{item.variantName}</p>
                     ) : null}
                     <div className="mt-2 flex items-center justify-between gap-2">
-                      <p className="text-base font-bold text-brand-light">
-                        {formatMoney(item.price)}
-                      </p>
+                      <div>
+                        <p className="text-base font-bold text-brand-light">
+                          {formatMoney(item.price * item.quantity)}
+                        </p>
+                        <p className="text-[11px] text-neutral-400">
+                          {formatMoney(item.price)} c/u
+                        </p>
+                      </div>
+                      <span className="rounded-full bg-brand/25 px-2.5 py-1 text-xs font-bold tabular-nums text-white ring-1 ring-brand/40">
+                        ×{item.quantity}
+                      </span>
+                    </div>
+                    <div className="mt-2.5 flex items-center justify-between gap-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wide text-neutral-400">
+                        Cantidad
+                      </span>
                       <button
                         type="button"
                         onClick={() => removeItem(item.variantId)}
@@ -136,7 +149,7 @@ export default function CartDrawer() {
                         Eliminar
                       </button>
                     </div>
-                    <div className="mt-2">
+                    <div className="mt-1.5">
                       <QuantitySelector
                         value={item.quantity}
                         max={item.maxStock}

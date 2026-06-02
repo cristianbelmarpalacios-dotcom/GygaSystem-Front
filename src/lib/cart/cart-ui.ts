@@ -29,3 +29,19 @@ export const cartLabel =
 
 export const cartEyebrow =
   "text-[10px] font-bold uppercase tracking-[0.2em] text-brand-light/90";
+
+/** Página /carrito sobre fondo claro de la tienda */
+export const cartPageEyebrow =
+  "text-[10px] font-bold uppercase tracking-[0.2em] text-brand-dark";
+
+export const cartPageLabel =
+  "text-[10px] font-bold uppercase tracking-[0.14em] text-brand-dark";
+
+export const cartPageItemCard =
+  "flex flex-col gap-4 rounded-2xl border border-neutral-200/80 bg-white p-4 shadow-[0_1px_3px_rgba(0,0,0,0.06)] transition-shadow hover:shadow-md sm:flex-row sm:items-start sm:gap-5 sm:p-5";
+
+export const cartPagePanel =
+  "rounded-2xl border border-neutral-200/80 bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.06)] sm:p-6";
+
+export const cartPageInput =
+  "w-full rounded-lg border border-neutral-200 bg-white px-3 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20";

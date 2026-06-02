@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import QuantitySelector from "@/components/cart/QuantitySelector";
 import { useCart } from "@/context/CartContext";
 import { getVariantPricing } from "@/lib/catalog/pricing";
@@ -19,16 +19,43 @@ export default function AddToCartControls({
   layout = "compact",
   onAdded,
 }: Props) {
-  const { addItem } = useCart();
+  const { items, addItem, updateQuantity, openCart } = useCart();
   const pricing = getVariantPricing(variant);
-  const [quantity, setQuantity] = useState(1);
+  const isCatalogLayout = layout === "narrow" || layout === "compact";
+
+  const cartItem = items.find((i) => i.variantId === variant.id);
+  const inCart = Boolean(cartItem);
+
+  const [pendingQty, setPendingQty] = useState(isCatalogLayout ? 0 : 1);
   const [justAdded, setJustAdded] = useState(false);
+
+  useEffect(() => {
+    setPendingQty(isCatalogLayout ? 0 : 1);
+  }, [variant.id, isCatalogLayout]);
+
+  const minQty = inCart ? 0 : isCatalogLayout ? 0 : 1;
+  const displayQty = inCart ? (cartItem?.quantity ?? 0) : pendingQty;
 
   const image =
     product.images.find((i) => i.role === "MAIN") ?? product.images[0];
 
+  const handleQuantityChange = (next: number) => {
+    if (inCart) {
+      updateQuantity(variant.id, next);
+      return;
+    }
+    setPendingQty(next);
+  };
+
   const handleAdd = () => {
     if (!pricing.inStock) return;
+
+    if (inCart) {
+      openCart();
+      return;
+    }
+
+    const qty = pendingQty > 0 ? pendingQty : 1;
     addItem({
       productId: product.id,
       variantId: variant.id,
@@ -44,8 +71,9 @@ export default function AddToCartControls({
       price: pricing.price,
       maxStock: pricing.stock,
       imageUrl: image?.url,
-      quantity,
+      quantity: qty,
     });
+    setPendingQty(isCatalogLayout ? 0 : 1);
     setJustAdded(true);
     onAdded?.();
     window.setTimeout(() => setJustAdded(false), 2000);
@@ -63,13 +91,23 @@ export default function AddToCartControls({
     );
   }
 
+  const inCartActive = inCart && !justAdded;
+
   const compactBtnClass = justAdded
     ? "bg-gradient-to-r from-emerald-500 to-emerald-600 shadow-[0_4px_14px_rgba(16,185,129,0.35)]"
-    : "bg-gradient-to-r from-brand to-brand-dark shadow-[0_4px_14px_rgba(155,123,182,0.4)] hover:shadow-[0_6px_20px_rgba(155,123,182,0.45)] hover:brightness-105";
+    : inCartActive
+      ? "bg-gradient-to-r from-emerald-600 to-emerald-700 shadow-[0_4px_14px_rgba(5,150,105,0.35)]"
+      : "bg-gradient-to-r from-brand to-brand-dark shadow-[0_4px_14px_rgba(155,123,182,0.4)] hover:shadow-[0_6px_20px_rgba(155,123,182,0.45)] hover:brightness-105";
 
   const fullBtnClass = justAdded
     ? "bg-gradient-to-r from-emerald-500 to-emerald-600 shadow-[0_6px_20px_rgba(16,185,129,0.35)]"
-    : "bg-gradient-to-r from-brand via-[#8f6fad] to-brand-dark shadow-[0_6px_22px_rgba(155,123,182,0.45)] hover:shadow-[0_8px_28px_rgba(155,123,182,0.5)] hover:brightness-105";
+    : inCartActive
+      ? "bg-gradient-to-r from-emerald-600 to-emerald-700 shadow-[0_6px_20px_rgba(5,150,105,0.35)]"
+      : "bg-gradient-to-r from-brand via-[#8f6fad] to-brand-dark shadow-[0_6px_22px_rgba(155,123,182,0.45)] hover:shadow-[0_8px_28px_rgba(155,123,182,0.5)] hover:brightness-105";
+
+  const qtyShellClass = inCartActive
+    ? "ring-2 ring-emerald-500/30 ring-offset-1"
+    : "";
 
   if (layout === "narrow") {
     return (
@@ -78,20 +116,35 @@ export default function AddToCartControls({
         onClick={(e) => e.preventDefault()}
         onKeyDown={(e) => e.stopPropagation()}
       >
-        <QuantitySelector
-          value={quantity}
-          max={pricing.stock}
-          onChange={setQuantity}
-          size="sm"
-        />
+        <div className={qtyShellClass + " rounded-lg"}>
+          <QuantitySelector
+            value={displayQty}
+            min={minQty}
+            max={pricing.stock}
+            onChange={handleQuantityChange}
+            size="sm"
+          />
+        </div>
         <button
           type="button"
           onClick={handleAdd}
-          title={justAdded ? "Agregado" : "Agregar al carrito"}
-          aria-label={justAdded ? "Agregado al carrito" : "Agregar al carrito"}
+          title={
+            inCart
+              ? `${displayQty} en el carrito — ver carrito`
+              : justAdded
+                ? "Agregado"
+                : "Agregar al carrito"
+          }
+          aria-label={
+            inCart
+              ? `${displayQty} en el carrito, abrir carrito`
+              : justAdded
+                ? "Agregado al carrito"
+                : "Agregar al carrito"
+          }
           className={`flex h-9 w-10 shrink-0 items-center justify-center rounded-lg text-white transition-all duration-200 active:scale-[0.98] sm:h-7 sm:w-8 ${compactBtnClass}`}
         >
-          {justAdded ? (
+          {justAdded || inCartActive ? (
             <CheckIcon className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
           ) : (
             <CartIcon className="h-4 w-4 sm:h-3.5 sm:w-3.5" />
@@ -108,13 +161,21 @@ export default function AddToCartControls({
         onClick={(e) => e.preventDefault()}
         onKeyDown={(e) => e.stopPropagation()}
       >
+        {inCartActive ? (
+          <p className="text-center text-[10px] font-semibold text-emerald-700">
+            {displayQty} en el carrito
+          </p>
+        ) : null}
         <div className="flex items-center justify-between gap-2">
-          <QuantitySelector
-            value={quantity}
-            max={pricing.stock}
-            onChange={setQuantity}
-            size="sm"
-          />
+          <div className={qtyShellClass + " rounded-lg"}>
+            <QuantitySelector
+              value={displayQty}
+              min={minQty}
+              max={pricing.stock}
+              onChange={handleQuantityChange}
+              size="sm"
+            />
+          </div>
           <button
             type="button"
             onClick={handleAdd}
@@ -124,6 +185,11 @@ export default function AddToCartControls({
               <>
                 <CheckIcon className="h-3.5 w-3.5" />
                 Agregado
+              </>
+            ) : inCartActive ? (
+              <>
+                <CheckIcon className="h-3.5 w-3.5" />
+                Ver carrito
               </>
             ) : (
               <>
@@ -139,14 +205,22 @@ export default function AddToCartControls({
 
   return (
     <div className="space-y-4">
+      {inCartActive ? (
+        <p className="text-sm font-semibold text-emerald-700">
+          Ya tienes {displayQty} en el carrito. Ajusta la cantidad o agrega más.
+        </p>
+      ) : null}
       <div className="flex flex-wrap items-center gap-3">
         <span className="text-sm font-semibold text-neutral-700">Cantidad</span>
-        <QuantitySelector
-          value={quantity}
-          max={pricing.stock}
-          onChange={setQuantity}
-          size="md"
-        />
+        <div className={qtyShellClass + " rounded-lg"}>
+          <QuantitySelector
+            value={displayQty}
+            min={minQty}
+            max={pricing.stock}
+            onChange={handleQuantityChange}
+            size="md"
+          />
+        </div>
         <span className="text-xs text-neutral-500">
           {pricing.stock} disponible{pricing.stock !== 1 ? "s" : ""}
         </span>
@@ -164,6 +238,11 @@ export default function AddToCartControls({
           <>
             <CheckIcon className="relative h-5 w-5" />
             <span className="relative">Agregado al carrito</span>
+          </>
+        ) : inCartActive ? (
+          <>
+            <CheckIcon className="relative h-5 w-5" />
+            <span className="relative">Ver carrito ({displayQty})</span>
           </>
         ) : (
           <>

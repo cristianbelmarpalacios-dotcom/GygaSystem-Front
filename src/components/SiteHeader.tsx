@@ -16,10 +16,12 @@ const primaryBtnClass =
 
 export default function SiteHeader({ navSections }: { navSections: NavSection[] }) {
   const pathname = usePathname();
-  const { itemCount, openCart } = useCart();
+  const { itemCount, openCart, pulseKey } = useCart();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const [cartAnimating, setCartAnimating] = useState(false);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const cartAnimTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     setMobileOpen(false);
@@ -29,8 +31,16 @@ export default function SiteHeader({ navSections }: { navSections: NavSection[] 
   useEffect(() => {
     return () => {
       if (closeTimer.current) clearTimeout(closeTimer.current);
+      if (cartAnimTimer.current) clearTimeout(cartAnimTimer.current);
     };
   }, []);
+
+  useEffect(() => {
+    if (pulseKey === 0) return;
+    setCartAnimating(true);
+    if (cartAnimTimer.current) clearTimeout(cartAnimTimer.current);
+    cartAnimTimer.current = setTimeout(() => setCartAnimating(false), 650);
+  }, [pulseKey]);
 
   const scheduleClose = () => {
     if (closeTimer.current) clearTimeout(closeTimer.current);
@@ -126,7 +136,11 @@ export default function SiteHeader({ navSections }: { navSections: NavSection[] 
           <button
             type="button"
             onClick={openCart}
-            className={`relative h-10 w-10 ${iconBtnClass}`}
+            className={`relative h-10 w-10 ${iconBtnClass} ${
+              cartAnimating
+                ? "animate-cart-icon-bump border-brand/35 bg-brand/15 text-brand-dark shadow-[0_0_0_3px_rgba(155,123,182,0.25)]"
+                : ""
+            }`}
             aria-label={`Carrito${itemCount > 0 ? `, ${itemCount} productos` : ""}`}
           >
             <svg
@@ -145,7 +159,11 @@ export default function SiteHeader({ navSections }: { navSections: NavSection[] 
               <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
             </svg>
             {itemCount > 0 ? (
-              <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-brand px-1 text-[10px] font-bold text-white ring-2 ring-white">
+              <span
+                className={`absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-brand px-1 text-[10px] font-bold text-white ring-2 ring-white ${
+                  cartAnimating ? "animate-cart-badge-pop" : ""
+                }`}
+              >
                 {itemCount > 99 ? "99+" : itemCount}
               </span>
             ) : null}

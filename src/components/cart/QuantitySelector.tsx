@@ -44,8 +44,8 @@ export default function QuantitySelector({
       : "text-neutral-600 hover:bg-neutral-50";
   const inputColor =
     theme === "dark"
-      ? "border-white/15 text-white"
-      : "border-neutral-200 text-neutral-900";
+      ? "border-white/20 bg-neutral-900 text-white caret-white [color-scheme:dark]"
+      : "border-neutral-200 bg-white text-neutral-900 caret-neutral-900";
 
   return (
     <div

@@ -64,10 +64,10 @@ export default function CartOrderSummary({
     return (
       <div className={`flex items-center gap-3 ${className}`}>
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-bold uppercase tracking-wide text-brand-light">
+          <p className="text-[10px] font-bold uppercase tracking-wide text-brand-dark">
             Total estimado
           </p>
-          <p className="text-xl font-bold text-white">{formatMoney(total)}</p>
+          <p className="text-xl font-bold text-neutral-900">{formatMoney(total)}</p>
           <p className="text-[11px] text-neutral-500">
             {itemCount} {itemCount === 1 ? "producto" : "productos"}
           </p>
@@ -102,9 +102,11 @@ export default function CartOrderSummary({
         <div className="mt-5 space-y-2 border-b border-white/10 pb-5 text-sm">
           {items.map((item) => (
             <div key={item.variantId} className="flex justify-between gap-2">
-              <span className="line-clamp-1 text-neutral-300">
+              <span className="line-clamp-1 text-neutral-200">
                 {item.productName}{" "}
-                <span className="text-neutral-500">×{item.quantity}</span>
+                <span className="font-bold tabular-nums text-brand-light">
+                  ×{item.quantity}
+                </span>
               </span>
               <span className="shrink-0 font-medium text-white">
                 {formatMoney(item.price * item.quantity)}
