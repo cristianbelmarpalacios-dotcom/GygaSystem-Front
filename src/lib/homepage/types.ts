@@ -48,6 +48,7 @@ export type HomeSection = {
   backgroundStorageKey?: string | null;
   backgroundOverlayOpacity?: number | null;
   backgroundBlurPx?: number | null;
+  showWelcomeText?: boolean;
   slides: HomeSlide[];
   promo: HomePromo | null;
   tiles: HomeTile[];

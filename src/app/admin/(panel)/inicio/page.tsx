@@ -11,7 +11,7 @@ import {
 } from "@/lib/admin/permissions";
 import type { AdminProduct } from "@/lib/api/types";
 import type { HomeSection, HomeSlide, HomeTile } from "@/lib/homepage/types";
-import { WelcomeBackgroundLayer } from "@/components/home/HomeWelcomeSection";
+import { WelcomeBackgroundLayer } from "@/components/home/WelcomeBackgroundLayer";
 import {
   DEFAULT_WELCOME_BLUR_PX,
   DEFAULT_WELCOME_OVERLAY_OPACITY,
@@ -21,13 +21,18 @@ import AdminAlert from "@/components/admin/ui/AdminAlert";
 import AdminPageHeader from "@/components/admin/ui/AdminPageHeader";
 import AdminSegmentTabs from "@/components/admin/ui/AdminSegmentTabs";
 import { adminPageSpacing } from "@/lib/admin/design";
+import {
+  isWelcomeLegacySlideId,
+  resolveWelcomeSlides,
+  WELCOME_SLIDE_MAX,
+} from "@/lib/homepage/welcome-slides";
 import { adminInputClass } from "@/lib/admin/ui";
 
 const inputClass = adminInputClass;
 
 type Tab = "welcome" | "strip" | "deals" | "grid" | "hero";
 
-type SlideSectionType = "HERO_BANNER" | "STRIP_BANNER";
+type SlideSectionType = "HERO_BANNER" | "STRIP_BANNER" | "WELCOME_BLOCK";
 
 type SlideModalState = {
   sectionType: SlideSectionType;
@@ -49,12 +54,12 @@ export default function AdminInicioPage() {
   const [slideModal, setSlideModal] = useState<SlideModalState>(null);
   const [promoModalOpen, setPromoModalOpen] = useState(false);
   const [tileModal, setTileModal] = useState<HomeTile | "new" | null>(null);
-  const [welcomeBgModalOpen, setWelcomeBgModalOpen] = useState(false);
   const [publishedProducts, setPublishedProducts] = useState<AdminProduct[]>([]);
 
   const hero = sections.find((s) => s.type === "HERO_BANNER");
   const strip = sections.find((s) => s.type === "STRIP_BANNER");
   const welcome = sections.find((s) => s.type === "WELCOME_BLOCK");
+  const welcomeSlides = resolveWelcomeSlides(welcome, { forAdmin: true });
   const deals = sections.find((s) => s.type === "DEALS_CAROUSEL");
   const grid = sections.find((s) => s.type === "BANNER_GRID");
 
@@ -92,6 +97,7 @@ export default function AdminInicioPage() {
       backgroundStorageKey?: string | null;
       backgroundOverlayOpacity?: number;
       backgroundBlurPx?: number;
+      showWelcomeText?: boolean;
     },
   ) {
     if (!canEdit) return;
@@ -112,46 +118,6 @@ export default function AdminInicioPage() {
       await load();
     } catch (e) {
       setError(e instanceof Error ? e.message : "No se pudo guardar");
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function onSaveWelcomeBackground(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (!canEdit) return;
-    const fd = new FormData(e.currentTarget);
-    const file = fd.get("file") as File;
-    if (!file?.size) return;
-    setSaving(true);
-    setError(null);
-    try {
-      const { url, storageKey } = await uploadHomepageImage(file);
-      await saveSectionMeta("WELCOME_BLOCK", {
-        backgroundImageUrl: url,
-        backgroundStorageKey: storageKey,
-      });
-      setWelcomeBgModalOpen(false);
-      setMessage("Imagen de fondo actualizada.");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al subir");
-    } finally {
-      setSaving(false);
-    }
-  }
-
-  async function clearWelcomeBackground() {
-    if (!canEdit) return;
-    if (!confirm("¿Quitar la imagen de fondo de la sección inicial?")) return;
-    setSaving(true);
-    try {
-      await saveSectionMeta("WELCOME_BLOCK", {
-        backgroundImageUrl: null,
-        backgroundStorageKey: null,
-      });
-      setMessage("Imagen de fondo eliminada.");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error");
     } finally {
       setSaving(false);
     }
@@ -184,7 +150,7 @@ export default function AdminInicioPage() {
         altText: String(fd.get("altText") || ""),
         sortOrder: Number(fd.get("sortOrder") ?? slide?.sortOrder ?? 0),
       };
-      if (slide?.id) {
+      if (slide?.id && !isWelcomeLegacySlideId(slide.id)) {
         await apiFetch(`/v1/admin/homepage/slides/${slide.id}`, {
           method: "PATCH",
           body: JSON.stringify(body),
@@ -196,8 +162,25 @@ export default function AdminInicioPage() {
           body: JSON.stringify(body),
         });
         setMessage(
-          sectionType === "STRIP_BANNER" ? "Banner alargado agregado." : "Banner agregado.",
+          sectionType === "STRIP_BANNER"
+            ? "Banner alargado agregado."
+            : sectionType === "WELCOME_BLOCK"
+              ? "Imagen de portada agregada."
+              : "Banner agregado.",
         );
+        if (
+          sectionType === "WELCOME_BLOCK" &&
+          slide?.id &&
+          isWelcomeLegacySlideId(slide.id)
+        ) {
+          await apiFetch("/v1/admin/homepage/sections/WELCOME_BLOCK", {
+            method: "PATCH",
+            body: JSON.stringify({
+              backgroundImageUrl: null,
+              backgroundStorageKey: null,
+            }),
+          });
+        }
       }
       setSlideModal(null);
       await load();
@@ -278,10 +261,36 @@ export default function AdminInicioPage() {
 
   async function deleteSlide(id: string) {
     if (!canDelete) return;
-    if (!confirm("¿Eliminar este banner? Volverá a mostrarse solo el bloque de bienvenida si no quedan más.")) return;
+    if (!confirm("¿Eliminar este banner?")) return;
     await apiFetch(`/v1/admin/homepage/slides/${id}`, { method: "DELETE" });
     setMessage("Banner eliminado.");
     await load();
+  }
+
+  async function deleteWelcomeSlide(id: string) {
+    if (!canDelete) return;
+    if (!confirm("¿Eliminar esta imagen de portada?")) return;
+    if (isWelcomeLegacySlideId(id)) {
+      setSaving(true);
+      try {
+        await apiFetch("/v1/admin/homepage/sections/WELCOME_BLOCK", {
+          method: "PATCH",
+          body: JSON.stringify({
+            backgroundImageUrl: null,
+            backgroundStorageKey: null,
+          }),
+        });
+        setMessage("Imagen de portada eliminada.");
+        await load();
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "No se pudo eliminar");
+      } finally {
+        setSaving(false);
+      }
+      return;
+    }
+    await deleteSlide(id);
+    setMessage("Imagen de portada eliminada.");
   }
 
   async function deleteTile(id: string) {
@@ -368,13 +377,20 @@ export default function AdminInicioPage() {
                   + Agregar banner
                 </button>
               ) : null}
-              {canEdit && tab === "welcome" ? (
+              {canEdit &&
+              tab === "welcome" &&
+              welcomeSlides.length < WELCOME_SLIDE_MAX ? (
                 <button
                   type="button"
-                  onClick={() => setWelcomeBgModalOpen(true)}
+                  onClick={() =>
+                    setSlideModal({
+                      sectionType: "WELCOME_BLOCK",
+                      slide: "new",
+                    })
+                  }
                   className="rounded-xl bg-brand px-4 py-2 text-sm font-semibold text-white"
                 >
-                  {welcome?.backgroundImageUrl ? "Cambiar fondo" : "+ Subir fondo"}
+                  + Agregar imagen ({welcomeSlides.length}/{WELCOME_SLIDE_MAX})
                 </button>
               ) : null}
               {canEdit && tab === "deals" ? (
@@ -446,19 +462,21 @@ export default function AdminInicioPage() {
           {tab === "welcome" ? (
             <>
               <p className="text-sm text-neutral-600">
-                Primera sección visible en la home: logo, textos e imagen de fondo
-                opcional.
+                Carrusel de portada (máximo {WELCOME_SLIDE_MAX} imágenes). Haz clic en una
+                miniatura o usa Anterior/Siguiente en la vista previa para elegir cuál
+                editar. Cada imagen puede tener su URL, velo y difuminado son globales.
               </p>
-              <WelcomeBackgroundPanel
+              <WelcomePortadaPanel
                 section={welcome}
+                slides={welcomeSlides}
                 canEdit={canEdit}
                 canDelete={canDelete}
                 saving={saving}
-                onChangeBackground={() => setWelcomeBgModalOpen(true)}
-                onClear={() => void clearWelcomeBackground()}
-                onSaveStyle={(fields) =>
-                  void saveSectionMeta("WELCOME_BLOCK", fields)
+                onEditSlide={(s) =>
+                  setSlideModal({ sectionType: "WELCOME_BLOCK", slide: s })
                 }
+                onDeleteSlide={(id) => void deleteWelcomeSlide(id)}
+                onSaveMeta={(fields) => void saveSectionMeta("WELCOME_BLOCK", fields)}
               />
             </>
           ) : null}
@@ -491,40 +509,19 @@ export default function AdminInicioPage() {
       )}
 
       <AdminFormModal
-        open={welcomeBgModalOpen}
-        title="Imagen de fondo — sección inicial"
-        wide
-        onClose={() => !saving && setWelcomeBgModalOpen(false)}
-      >
-        <form onSubmit={(e) => void onSaveWelcomeBackground(e)} className="space-y-4">
-          <p className="text-sm text-neutral-600">
-            La imagen se muestra detrás del bloque de bienvenida. Ajusta el velo blanco y
-            el difuminado en la pestaña <strong>Sección inicial</strong> después de subirla.
-          </p>
-          <label className="block text-sm">
-            Imagen de fondo
-            <input name="file" type="file" accept="image/*" required className={inputClass} />
-          </label>
-          <button
-            type="submit"
-            disabled={saving}
-            className="rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
-          >
-            Guardar fondo
-          </button>
-        </form>
-      </AdminFormModal>
-
-      <AdminFormModal
         open={slideModal !== null}
         title={
           slideModal?.slide === "new"
             ? slideModal.sectionType === "STRIP_BANNER"
               ? "Nuevo banner alargado"
-              : "Nuevo banner grande"
+              : slideModal.sectionType === "WELCOME_BLOCK"
+                ? "Nueva imagen de portada"
+                : "Nuevo banner grande"
             : slideModal?.sectionType === "STRIP_BANNER"
               ? "Editar banner alargado"
-              : "Editar banner"
+              : slideModal?.sectionType === "WELCOME_BLOCK"
+                ? "Editar imagen de portada"
+                : "Editar banner"
         }
         wide
         onClose={() => !saving && setSlideModal(null)}
@@ -532,7 +529,13 @@ export default function AdminInicioPage() {
         {slideModal ? (
           <SlideForm
             slide={slideModal.slide === "new" ? undefined : slideModal.slide}
-            variant={slideModal.sectionType === "STRIP_BANNER" ? "strip" : "hero"}
+            variant={
+              slideModal.sectionType === "STRIP_BANNER"
+                ? "strip"
+                : slideModal.sectionType === "WELCOME_BLOCK"
+                  ? "welcome"
+                  : "hero"
+            }
             saving={saving}
             onSubmit={(e) =>
               void onSaveSlide(
@@ -580,108 +583,201 @@ export default function AdminInicioPage() {
   );
 }
 
-function WelcomeBackgroundPanel({
+function WelcomePortadaPanel({
   section,
+  slides,
   canEdit,
   canDelete,
   saving,
-  onChangeBackground,
-  onClear,
-  onSaveStyle,
+  onEditSlide,
+  onDeleteSlide,
+  onSaveMeta,
 }: {
   section?: HomeSection;
+  slides: HomeSlide[];
   canEdit: boolean;
   canDelete: boolean;
   saving: boolean;
-  onChangeBackground: () => void;
-  onClear: () => void;
-  onSaveStyle: (fields: {
+  onEditSlide: (s: HomeSlide) => void;
+  onDeleteSlide: (id: string) => void;
+  onSaveMeta: (fields: {
     backgroundOverlayOpacity: number;
     backgroundBlurPx: number;
+    showWelcomeText: boolean;
   }) => void;
 }) {
-  const url = section?.backgroundImageUrl;
   const [overlay, setOverlay] = useState(
     section?.backgroundOverlayOpacity ?? DEFAULT_WELCOME_OVERLAY_OPACITY,
   );
   const [blur, setBlur] = useState(
     section?.backgroundBlurPx ?? DEFAULT_WELCOME_BLUR_PX,
   );
+  const [showText, setShowText] = useState(section?.showWelcomeText ?? true);
+
+  const [previewIndex, setPreviewIndex] = useState(0);
 
   useEffect(() => {
     setOverlay(section?.backgroundOverlayOpacity ?? DEFAULT_WELCOME_OVERLAY_OPACITY);
     setBlur(section?.backgroundBlurPx ?? DEFAULT_WELCOME_BLUR_PX);
-  }, [section?.backgroundOverlayOpacity, section?.backgroundBlurPx]);
+    setShowText(section?.showWelcomeText ?? true);
+  }, [
+    section?.backgroundOverlayOpacity,
+    section?.backgroundBlurPx,
+    section?.showWelcomeText,
+  ]);
+
+  useEffect(() => {
+    setPreviewIndex((i) => (slides.length === 0 ? 0 : Math.min(i, slides.length - 1)));
+  }, [slides.length, slides.map((s) => s.id).join(",")]);
 
   const previewStyle = resolveWelcomeBackgroundStyle(overlay, blur);
-
-  if (!url) {
-    return (
-      <p className="rounded-xl border border-dashed border-neutral-200 p-8 text-center text-sm text-neutral-500">
-        Sin imagen de fondo. La sección se ve con fondo blanco. Usa{" "}
-        <strong>+ Subir fondo</strong> para agregar una.
-      </p>
-    );
-  }
+  const previewSlide = slides[previewIndex];
+  const selectedSlideId = previewSlide?.id;
 
   return (
     <div className="space-y-4">
-      <div className="overflow-hidden rounded-xl border border-neutral-100 bg-white shadow-sm">
-        <div className="relative aspect-[16/10] min-h-[240px] w-full overflow-hidden bg-neutral-200 sm:min-h-[280px]">
-          <WelcomeBackgroundLayer
-            imageUrl={url}
-            style={previewStyle}
-            fit="contain"
-          />
-        </div>
-        <p className="border-b border-neutral-100 px-4 py-2.5 text-center text-xs text-neutral-600">
-          Vista previa con velo {overlay}% y difuminado {blur}px. En la tienda la imagen
-          cubre todo el ancho de la sección.
-        </p>
-        <div className="flex flex-wrap gap-2 border-t border-neutral-100 p-4">
-          {canEdit ? (
-            <button
-              type="button"
-              onClick={onChangeBackground}
-              disabled={saving}
-              className="rounded-xl bg-neutral-100 px-4 py-2 text-sm font-semibold"
-            >
-              Cambiar imagen
-            </button>
+      <SlideList
+        slides={slides}
+        variant="welcome"
+        canEdit={canEdit}
+        canDelete={canDelete}
+        onEdit={onEditSlide}
+        onDelete={onDeleteSlide}
+        selectedSlideId={selectedSlideId}
+        onSelectSlide={(s) => {
+          const idx = slides.findIndex((x) => x.id === s.id);
+          if (idx >= 0) setPreviewIndex(idx);
+        }}
+      />
+
+      {previewSlide ? (
+        <div className="overflow-hidden rounded-xl border border-neutral-200/80 bg-white shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-100 px-4 py-2">
+            <p className="text-sm font-semibold text-neutral-900">
+              Vista previa · imagen {previewIndex + 1} de {slides.length}
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              {slides.length > 1 ? (
+                <>
+                  <button
+                    type="button"
+                    disabled={previewIndex <= 0}
+                    onClick={() => setPreviewIndex((i) => Math.max(0, i - 1))}
+                    className="rounded-lg border border-neutral-200 px-3 py-1 text-xs font-semibold text-neutral-800 hover:bg-neutral-50 disabled:opacity-40"
+                  >
+                    ← Anterior
+                  </button>
+                  <button
+                    type="button"
+                    disabled={previewIndex >= slides.length - 1}
+                    onClick={() =>
+                      setPreviewIndex((i) => Math.min(slides.length - 1, i + 1))
+                    }
+                    className="rounded-lg border border-neutral-200 px-3 py-1 text-xs font-semibold text-neutral-800 hover:bg-neutral-50 disabled:opacity-40"
+                  >
+                    Siguiente →
+                  </button>
+                </>
+              ) : null}
+              {canEdit ? (
+                <button
+                  type="button"
+                  onClick={() => onEditSlide(previewSlide)}
+                  className="rounded-lg bg-brand px-3 py-1 text-xs font-semibold text-white"
+                >
+                  Editar esta imagen
+                </button>
+              ) : null}
+            </div>
+          </div>
+          {slides.length > 1 ? (
+            <div className="flex gap-2 overflow-x-auto border-b border-neutral-100 bg-neutral-50/80 px-4 py-3">
+              {slides.map((s, i) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => setPreviewIndex(i)}
+                  className={`relative shrink-0 overflow-hidden rounded-lg border-2 transition ${
+                    i === previewIndex
+                      ? "border-brand ring-2 ring-brand/20"
+                      : "border-transparent opacity-70 hover:opacity-100"
+                  }`}
+                  aria-label={`Ver imagen ${i + 1}`}
+                  aria-pressed={i === previewIndex}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={s.imageUrl}
+                    alt=""
+                    className="h-14 w-24 object-cover"
+                  />
+                  <span className="absolute bottom-0.5 right-0.5 rounded bg-black/60 px-1 text-[10px] font-bold text-white">
+                    {i + 1}
+                  </span>
+                </button>
+              ))}
+            </div>
           ) : null}
-          {canDelete ? (
-            <button
-              type="button"
-              onClick={onClear}
-              disabled={saving}
-              className="rounded-xl px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50"
-            >
-              Quitar fondo
-            </button>
-          ) : null}
+          <div className="relative aspect-[16/10] min-h-[200px] w-full overflow-hidden bg-neutral-200">
+            <WelcomeBackgroundLayer
+              imageUrl={previewSlide.imageUrl}
+              style={previewStyle}
+              fit="contain"
+            />
+            {showText ? (
+              <p className="absolute bottom-2 left-2 right-2 z-[1] rounded-lg bg-white/80 px-2 py-1 text-center text-[10px] text-neutral-600">
+                Con textos activos en la tienda
+              </p>
+            ) : null}
+          </div>
+          <p className="border-t border-neutral-100 px-4 py-2 text-center text-xs text-neutral-500">
+            Velo {overlay}% · difuminado {blur}px
+            {slides.length > 1 ? ` · ${slides.length} imágenes en carrusel` : ""}
+            {previewSlide.linkUrl ? (
+              <>
+                {" "}
+                · enlace: <span className="font-mono">{previewSlide.linkUrl}</span>
+              </>
+            ) : null}
+          </p>
         </div>
-      </div>
+      ) : null}
 
       {canEdit ? (
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            onSaveStyle({
+            onSaveMeta({
               backgroundOverlayOpacity: overlay,
               backgroundBlurPx: blur,
+              showWelcomeText: showText,
             });
           }}
-          className="rounded-xl border border-neutral-100 bg-white p-6 shadow-sm"
+          className="rounded-xl border border-neutral-200/80 bg-white p-6 shadow-sm"
         >
-          <h3 className="font-bold text-neutral-900">Ajuste visual del fondo</h3>
-          <p className="mt-1 text-xs text-neutral-600">
-            Menos velo y menos difuminado = imagen más nítida y visible. Más velo = fondo
-            más claro/grisáceo y textos más legibles.
-          </p>
+          <h3 className="font-bold text-neutral-900">Opciones de portada</h3>
+
+          <label className="mt-4 flex items-start gap-3 text-sm">
+            <input
+              type="checkbox"
+              checked={showText}
+              onChange={(e) => setShowText(e.target.checked)}
+              className="mt-1 h-4 w-4 rounded border-neutral-300 text-brand focus:ring-brand/25"
+            />
+            <span>
+              <span className="font-semibold text-neutral-900">
+                Mostrar textos y botones
+              </span>
+              <span className="mt-1 block text-xs text-neutral-600">
+                Desactiva para usar solo las imágenes del carrusel (sin logo, título ni
+                CTAs). Útil si el diseño va integrado en la foto.
+              </span>
+            </span>
+          </label>
 
           <label className="mt-5 block text-sm">
             <span className="flex items-center justify-between gap-2">
-              <span>Velo blanco (opaca la imagen)</span>
+              <span>Velo blanco (nitidez / legibilidad)</span>
               <span className="font-mono text-xs text-neutral-500">{overlay}%</span>
             </span>
             <input
@@ -722,9 +818,9 @@ function WelcomeBackgroundPanel({
           <button
             type="submit"
             disabled={saving}
-            className="mt-6 rounded-xl bg-brand px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
+            className="mt-6 rounded-lg bg-brand px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60"
           >
-            Guardar ajustes
+            Guardar opciones
           </button>
         </form>
       ) : null}
@@ -791,54 +887,99 @@ function SlideList({
   canDelete,
   onEdit,
   onDelete,
+  selectedSlideId,
+  onSelectSlide,
 }: {
   slides: HomeSlide[];
-  variant: "hero" | "strip";
+  variant: "hero" | "strip" | "welcome";
   canEdit: boolean;
   canDelete: boolean;
   onEdit: (s: HomeSlide) => void;
   onDelete: (id: string) => void;
+  selectedSlideId?: string;
+  onSelectSlide?: (s: HomeSlide) => void;
 }) {
   if (slides.length === 0) {
     return (
       <p className="rounded-xl border border-dashed border-neutral-200 p-8 text-center text-sm text-neutral-500">
         {variant === "strip"
           ? "No hay banner alargado. Usa + Agregar banner para subir uno."
-          : "No hay banners. Usa + Agregar banner para subir uno."}
+          : variant === "welcome"
+            ? `No hay imágenes de portada. Usa + Agregar imagen (máx. ${WELCOME_SLIDE_MAX}).`
+            : "No hay banners. Usa + Agregar banner para subir uno."}
       </p>
     );
   }
   return (
-    <ul className={variant === "strip" ? "space-y-4" : "grid gap-4 sm:grid-cols-2"}>
-      {slides.map((s) => (
-        <li key={s.id} className="overflow-hidden rounded-xl border bg-white shadow-sm">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={s.imageUrl}
-            alt={s.altText ?? ""}
-            className={
-              variant === "strip"
-                ? "aspect-[7/1] w-full object-cover"
-                : "aspect-[21/9] w-full object-cover"
-            }
-          />
+    <ul
+      className={
+        variant === "strip"
+          ? "space-y-4"
+          : variant === "welcome"
+            ? "grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+            : "grid gap-4 sm:grid-cols-2"
+      }
+    >
+      {slides.map((s, index) => {
+        const isSelected =
+          variant === "welcome" && selectedSlideId != null && s.id === selectedSlideId;
+        return (
+        <li
+          key={s.id}
+          className={`overflow-hidden rounded-xl border bg-white shadow-sm ${
+            isSelected ? "border-brand ring-2 ring-brand/15" : "border-neutral-200/80"
+          }`}
+        >
+          <button
+            type="button"
+            onClick={() => onSelectSlide?.(s)}
+            disabled={!onSelectSlide}
+            className={`block w-full text-left ${onSelectSlide ? "cursor-pointer" : "cursor-default"}`}
+          >
+            <span className="relative block">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={s.imageUrl}
+                alt={s.altText ?? ""}
+                className={
+                  variant === "strip"
+                    ? "aspect-[7/1] w-full object-cover"
+                    : variant === "welcome"
+                      ? "aspect-[16/10] w-full object-cover"
+                      : "aspect-[21/9] w-full object-cover"
+                }
+              />
+              {variant === "welcome" ? (
+                <span className="absolute left-2 top-2 rounded-md bg-black/65 px-2 py-0.5 text-[10px] font-bold text-white">
+                  Imagen {index + 1}
+                </span>
+              ) : null}
+            </span>
+          </button>
           <div className="space-y-2 p-3">
             <p className="truncate text-xs font-mono text-neutral-600">{s.linkUrl}</p>
             <div className="flex flex-wrap gap-2">
               {canEdit ? (
-                <button type="button" onClick={() => onEdit(s)} className="rounded-lg bg-neutral-100 px-3 py-1.5 text-xs font-semibold">
+                <button type="button" onClick={() => onEdit(s)} className="rounded-lg bg-neutral-100 px-3 py-1.5 text-xs font-semibold hover:bg-neutral-200">
                   Editar
                 </button>
               ) : null}
               {canDelete ? (
-                <button type="button" onClick={() => onDelete(s.id)} className="rounded-lg px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50">
-                  Eliminar
+                <button
+                  type="button"
+                  onClick={() => onDelete(s.id)}
+                  className="rounded-lg px-3 py-1.5 text-xs font-semibold text-red-600 hover:bg-red-50"
+                >
+                  {variant === "welcome" && isWelcomeLegacySlideId(s.id)
+                    ? "Quitar fondo"
+                    : "Eliminar"}
                 </button>
               ) : null}
             </div>
           </div>
         </li>
-      ))}
+        );
+      })}
     </ul>
   );
 }
@@ -850,7 +991,7 @@ function SlideForm({
   onSubmit,
 }: {
   slide?: HomeSlide;
-  variant: "hero" | "strip";
+  variant: "hero" | "strip" | "welcome";
   saving: boolean;
   onSubmit: (e: FormEvent<HTMLFormElement>) => void;
 }) {
@@ -862,12 +1003,20 @@ function SlideForm({
         <span className="mt-1 block text-xs text-neutral-500">
           {variant === "strip"
             ? "Formato alargado: ancho completo, poca altura (~1400×180 px)."
-            : "Formato ancho dentro del contenido (~1400×520 px o similar, ratio apaisado)."}
+            : variant === "welcome"
+              ? "Portada principal: ~1920×1080 px o similar (16:9). Máximo 3 imágenes."
+              : "Formato ancho dentro del contenido (~1400×520 px o similar, ratio apaisado)."}
         </span>
       </label>
       <label className="block text-sm">
-        URL al hacer clic
-        <input name="linkUrl" defaultValue={slide?.linkUrl ?? "/"} required className={inputClass} />
+        URL al hacer clic {variant === "welcome" ? "(opcional, dejar / si no enlaza)" : ""}
+        <input
+          name="linkUrl"
+          defaultValue={slide?.linkUrl ?? "/"}
+          required={variant !== "welcome"}
+          placeholder={variant === "welcome" ? "/catalogo o https://…" : undefined}
+          className={inputClass}
+        />
       </label>
       <label className="block text-sm">
         Texto alternativo

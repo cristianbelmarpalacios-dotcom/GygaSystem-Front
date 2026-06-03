@@ -13,6 +13,7 @@ import {
 import HomeCatalogSection from "@/components/catalog/HomeCatalogSection";
 import { fetchAllPublishedProducts } from "@/lib/catalog/fetch";
 import { fetchHomepage } from "@/lib/homepage/fetch";
+import { resolveWelcomeSlides } from "@/lib/homepage/welcome-slides";
 
 export const dynamic = "force-dynamic";
 
@@ -43,10 +44,7 @@ export default async function HomePage() {
   }
 
   const welcomeSection = homepage.sections.find((s) => s.type === "WELCOME_BLOCK");
-  const welcomeBackground =
-    welcomeSection?.isActive && welcomeSection.backgroundImageUrl
-      ? welcomeSection.backgroundImageUrl
-      : null;
+  const welcomeSlides = resolveWelcomeSlides(welcomeSection);
 
   const stripSection = homepage.sections.find((s) => s.type === "STRIP_BANNER");
   const stripSlides =
@@ -89,7 +87,8 @@ export default async function HomePage() {
       <JsonLd data={jsonLd} />
 
       <HomeWelcomeSection
-        backgroundImageUrl={welcomeBackground}
+        slides={welcomeSlides}
+        showWelcomeText={welcomeSection?.showWelcomeText ?? true}
         backgroundOverlayOpacity={welcomeSection?.backgroundOverlayOpacity}
         backgroundBlurPx={welcomeSection?.backgroundBlurPx}
       />
