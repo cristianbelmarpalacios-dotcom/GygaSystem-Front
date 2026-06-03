@@ -9,7 +9,10 @@ import { useAdminPermissions } from "@/hooks/useAdminPermissions";
 import { apiFetch } from "@/lib/api/client";
 import type { AdminOrder, AdminProduct, OrderStatus } from "@/lib/api/types";
 import { ORDER_STATUS_LABELS, formatMoney } from "@/lib/admin/format";
+import AdminBadge from "@/components/admin/ui/AdminBadge";
 import { adminButtonClass } from "@/components/admin/ui/AdminButton";
+import { adminPageSpacing } from "@/lib/admin/design";
+import { orderStatusBadgeVariant } from "@/lib/admin/format";
 
 export default function AdminDashboardPage() {
   const { can } = useAdminPermissions();
@@ -46,7 +49,7 @@ export default function AdminDashboardPage() {
   const published = products.filter((p) => p.status === "PUBLISHED").length;
 
   return (
-    <div className="space-y-8">
+    <div className={adminPageSpacing}>
       <AdminPageHeader
         eyebrow="Panel de control"
         title="Resumen"
@@ -56,7 +59,7 @@ export default function AdminDashboardPage() {
       {loading ? (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-28 animate-pulse rounded-2xl bg-neutral-200/50" />
+            <div key={i} className="h-28 animate-pulse admin-skeleton-shimmer rounded-xl" />
           ))}
         </div>
       ) : (
@@ -125,9 +128,9 @@ export default function AdminDashboardPage() {
                       <span className="font-mono text-xs font-semibold text-neutral-800">
                         {order.orderNumber}
                       </span>
-                      <span className="rounded-full bg-neutral-100 px-2.5 py-0.5 text-xs font-semibold text-neutral-700">
+                      <AdminBadge variant={orderStatusBadgeVariant(order.status)}>
                         {ORDER_STATUS_LABELS[order.status]}
-                      </span>
+                      </AdminBadge>
                       <span className="font-bold tabular-nums text-neutral-900">
                         {formatMoney(order.grandTotal, order.currency)}
                       </span>
@@ -142,7 +145,7 @@ export default function AdminDashboardPage() {
             {canOrders ? (
               <Link
                 href="/admin/pedidos"
-                className={`inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold ${adminButtonClass.primary}`}
+                className={`${adminButtonClass.primary} inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold`}
               >
                 Gestionar pedidos
               </Link>
@@ -150,7 +153,7 @@ export default function AdminDashboardPage() {
             {canProducts ? (
               <Link
                 href="/admin/productos"
-                className={`inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold ${adminButtonClass.secondary}`}
+                className={`${adminButtonClass.secondary} inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold`}
               >
                 Gestionar productos
               </Link>
@@ -158,7 +161,7 @@ export default function AdminDashboardPage() {
             {can("CATEGORIES", "view") ? (
               <Link
                 href="/admin/categorias"
-                className={`inline-flex items-center justify-center rounded-xl px-5 py-2.5 text-sm font-semibold ${adminButtonClass.secondary}`}
+                className={`${adminButtonClass.secondary} inline-flex items-center justify-center rounded-lg px-5 py-2.5 text-sm font-semibold`}
               >
                 Gestionar categorías
               </Link>

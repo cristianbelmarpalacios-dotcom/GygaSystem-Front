@@ -134,7 +134,7 @@ export default function MarketingPlatformCard({
   const showAdsMetrics = m.available && m.source === "api" && isAds;
 
   return (
-    <article className="overflow-hidden rounded-2xl border border-black/[0.06] bg-white shadow-[0_8px_30px_rgba(0,0,0,0.05)]">
+    <article className="overflow-hidden rounded-xl border border-neutral-200/80 bg-white shadow-[0_8px_30px_rgba(0,0,0,0.05)]">
       <div className={`h-1.5 w-full ${meta.accentBg}`} />
 
       <div className="p-5 sm:p-6">

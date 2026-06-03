@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { adminSurfaces, adminTypography } from "@/lib/admin/design";
 
 type Props = {
   eyebrow?: string;
@@ -19,7 +20,9 @@ export default function AdminPageHeader({
 }: Props) {
   if (variant === "hero") {
     return (
-      <header className="relative overflow-hidden rounded-2xl border border-brand/15 bg-gradient-to-br from-neutral-950 via-neutral-900 to-brand/40 px-6 py-8 text-white shadow-[0_20px_50px_rgba(89,55,114,0.2)] sm:px-8">
+      <header
+        className={`relative overflow-hidden ${adminSurfaces.card} bg-gradient-to-br from-neutral-950 via-neutral-900 to-brand/40 px-6 py-8 text-white shadow-brand sm:px-8`}
+      >
         <div className="relative z-10 flex flex-wrap items-end justify-between gap-6">
           <div className="min-w-0 flex-1">
             {eyebrow ? (
@@ -42,22 +45,16 @@ export default function AdminPageHeader({
   }
 
   return (
-    <header className="flex flex-wrap items-start justify-between gap-4 border-b border-black/[0.06] pb-6">
+    <header className="flex flex-wrap items-start justify-between gap-4 border-b border-neutral-200/80 pb-6">
       <div className="min-w-0 flex-1">
-        {eyebrow ? (
-          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-dark">
-            {eyebrow}
-          </p>
-        ) : null}
+        {eyebrow ? <p className={adminTypography.eyebrow}>{eyebrow}</p> : null}
         <h1
-          className={`font-bold tracking-tight text-neutral-900 ${eyebrow ? "mt-1 text-2xl sm:text-3xl" : "text-2xl sm:text-3xl"}`}
+          className={`${adminTypography.pageTitle} ${eyebrow ? "mt-1" : ""}`}
         >
           {title}
         </h1>
         {description ? (
-          <div className="mt-2 max-w-2xl text-sm leading-relaxed text-neutral-600">
-            {description}
-          </div>
+          <div className={`mt-2 max-w-2xl ${adminTypography.body}`}>{description}</div>
         ) : null}
         {children}
       </div>

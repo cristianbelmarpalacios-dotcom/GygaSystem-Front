@@ -5,10 +5,11 @@ import { ADMIN_HELP_SECTIONS } from "@/constants/admin-help";
 import AdminAlert from "@/components/admin/ui/AdminAlert";
 import AdminPageHeader from "@/components/admin/ui/AdminPageHeader";
 import AdminPanel from "@/components/admin/ui/AdminPanel";
+import { adminPageSpacing } from "@/lib/admin/design";
 
 export default function AdminAyudaPage() {
   return (
-    <div className="space-y-8">
+    <div className={adminPageSpacing}>
       <AdminPageHeader
         eyebrow="Soporte"
         title="Ayuda del backoffice"
@@ -33,7 +34,7 @@ export default function AdminAyudaPage() {
             <li key={s.id}>
               <a
                 href={`#${s.id}`}
-                className="inline-block rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-neutral-800 shadow-sm ring-1 ring-black/5 transition-all hover:ring-brand/30"
+                className={`inline-block rounded-full bg-white px-3 py-1.5 text-xs font-semibold text-neutral-800 shadow-sm ring-1 ring-neutral-200/80 transition-all hover:ring-brand/30`}
               >
                 {s.title}
               </a>

@@ -10,8 +10,13 @@ export default function AdminPanelLayout({
   return (
     <AdminGuard>
       <AdminShell>
-        <AdminModuleGuard>{children}</AdminModuleGuard>
+        <AdminModuleGuard>
+          <div className="admin-theme">{children}</div>
+        </AdminModuleGuard>
       </AdminShell>
     </AdminGuard>
   );
 }
+
+/** Evita que el layout del panel se cachee entre rutas del backoffice. */
+export const dynamic = "force-dynamic";

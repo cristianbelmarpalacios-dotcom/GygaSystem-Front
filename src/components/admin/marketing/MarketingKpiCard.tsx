@@ -61,7 +61,7 @@ export default function MarketingKpiCard({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl border border-black/[0.06] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_8px_24px_rgba(155,123,182,0.06)] ring-1 ${s.ring}`}
+      className={`relative overflow-hidden rounded-xl border border-neutral-200/80 bg-white p-5 shadow-sm ring-1 ${s.ring}`}
     >
       <div
         className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${s.glow}`}

@@ -27,19 +27,26 @@ import { filterDetailImages, filterGalleryImages } from "@/lib/catalog/product-i
 import ProductPrice from "@/components/catalog/ProductPrice";
 import { useAdminPermissions } from "@/hooks/useAdminPermissions";
 import AdminAlert from "@/components/admin/ui/AdminAlert";
+import AdminBadge from "@/components/admin/ui/AdminBadge";
 import AdminButton from "@/components/admin/ui/AdminButton";
+import AdminEmptyState from "@/components/admin/ui/AdminEmptyState";
+import AdminIconButton from "@/components/admin/ui/AdminIconButton";
 import AdminLoadingSkeleton from "@/components/admin/ui/AdminLoadingSkeleton";
 import AdminPageHeader from "@/components/admin/ui/AdminPageHeader";
+import AdminPagination from "@/components/admin/ui/AdminPagination";
 import AdminPanel from "@/components/admin/ui/AdminPanel";
-import {
-  adminFilterInputClass,
-  adminLabelClass,
-  adminSelectClass,
-  adminTableHeadClass,
-  adminTableRowClass,
-} from "@/lib/admin/ui";
+import AdminTable, {
+  AdminTableBody,
+  AdminTableCell,
+  AdminTableHead,
+  AdminTableHeadCell,
+  AdminTableRow,
+} from "@/components/admin/ui/AdminTable";
+import { adminFilterInputClass, adminLabelClass, adminSelectClass } from "@/lib/admin/ui";
+import { adminPageSpacing } from "@/lib/admin/design";
 
 const PRODUCT_TYPES = Object.keys(PRODUCT_TYPE_LABELS) as ProductType[];
+const PAGE_SIZE = 10;
 
 function matchesProductSearch(product: AdminProduct, query: string) {
   const q = query.trim().toLowerCase();
@@ -80,6 +87,7 @@ export default function AdminProductosPage() {
   const [editProduct, setEditProduct] = useState<AdminProduct | null>(null);
   const [archiveTarget, setArchiveTarget] = useState<AdminProduct | null>(null);
   const [archiving, setArchiving] = useState(false);
+  const [page, setPage] = useState(1);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -122,6 +130,24 @@ export default function AdminProductosPage() {
     });
   }, [products, searchQuery, typeFilter, brandFilter, categoryFilter]);
 
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+
+  const paginatedProducts = useMemo(() => {
+    const start = (currentPage - 1) * PAGE_SIZE;
+    return filteredProducts.slice(start, start + PAGE_SIZE);
+  }, [filteredProducts, currentPage]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [searchQuery, typeFilter, brandFilter, categoryFilter, statusFilter]);
+
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [page, totalPages]);
+
   const hasActiveFilters =
     searchQuery.trim() !== "" ||
     typeFilter !== "" ||
@@ -133,6 +159,7 @@ export default function AdminProductosPage() {
     setTypeFilter("");
     setBrandFilter("");
     setCategoryFilter("");
+    setPage(1);
   }
 
   function openCreateModal() {
@@ -301,7 +328,7 @@ export default function AdminProductosPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className={adminPageSpacing}>
       <AdminPageHeader
         eyebrow="Catálogo"
         title="Productos"
@@ -396,8 +423,8 @@ export default function AdminProductosPage() {
         title="Catálogo actual"
         description={
           filteredProducts.length === products.length
-            ? `${products.length} producto${products.length === 1 ? "" : "s"}`
-            : `${filteredProducts.length} de ${products.length} productos`
+            ? `${products.length} producto${products.length === 1 ? "" : "s"} · ${PAGE_SIZE} por página`
+            : `${filteredProducts.length} de ${products.length} productos · ${PAGE_SIZE} por página`
         }
       >
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
@@ -486,40 +513,49 @@ export default function AdminProductosPage() {
         {loading ? (
           <AdminLoadingSkeleton rows={8} />
         ) : filteredProducts.length === 0 ? (
-          <p className="p-6 text-sm text-neutral-500">
-            {hasActiveFilters
-              ? "Ningún producto coincide con los filtros."
-              : "No hay productos con este filtro."}
-          </p>
+          <AdminEmptyState
+            description={
+              hasActiveFilters
+                ? "Ningún producto coincide con los filtros."
+                : "No hay productos con este filtro."
+            }
+          />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[900px] text-left text-sm">
-              <thead className={adminTableHeadClass}>
+          <>
+            <AdminTable minWidth="900px">
+              <AdminTableHead>
                 <tr>
-                  <th className="px-4 py-3">Producto</th>
-                  <th className="px-4 py-3">Tipo</th>
-                  <th className="px-4 py-3">Estado</th>
-                  <th className="px-4 py-3">3D</th>
-                  <th className="px-4 py-3">Precio</th>
-                  <th className="px-4 py-3">Stock</th>
-                  <th className="px-4 py-3">Imágenes</th>
-                  <th className="px-4 py-3">Acciones</th>
+                  <AdminTableHeadCell>Producto</AdminTableHeadCell>
+                  <AdminTableHeadCell>Tipo</AdminTableHeadCell>
+                  <AdminTableHeadCell>Estado</AdminTableHeadCell>
+                  <AdminTableHeadCell>3D</AdminTableHeadCell>
+                  <AdminTableHeadCell>Precio</AdminTableHeadCell>
+                  <AdminTableHeadCell>Stock</AdminTableHeadCell>
+                  <AdminTableHeadCell>Imágenes</AdminTableHeadCell>
+                  <AdminTableHeadCell>Acciones</AdminTableHeadCell>
                 </tr>
-              </thead>
-              <tbody>
-                {filteredProducts.map((p) => {
+              </AdminTableHead>
+              <AdminTableBody>
+                {paginatedProducts.map((p) => {
                   const v = p.variants[0];
                   const gallery = filterGalleryImages(p.images ?? []);
                   const detailCount = filterDetailImages(p.images ?? []).length;
                   const thumb =
                     gallery.find((i) => i.role === "MAIN") ?? gallery[0];
                   const isVigente = p.status === "PUBLISHED";
+                  const stockVariant =
+                    !v || v.stock <= 0
+                      ? "danger"
+                      : v.stock <= 5
+                        ? "warn"
+                        : "success";
+
                   return (
-                    <tr
+                    <AdminTableRow
                       key={p.id}
-                      className={`${adminTableRowClass} ${!isVigente ? "bg-neutral-50/80" : ""}`}
+                      className={!isVigente ? "bg-neutral-50/80" : ""}
                     >
-                      <td className="px-4 py-3">
+                      <AdminTableCell>
                         <div className="flex items-center gap-3">
                           {thumb ? (
                             // eslint-disable-next-line @next/next/no-img-element
@@ -538,20 +574,14 @@ export default function AdminProductosPage() {
                             <p className="font-mono text-xs text-neutral-500">{p.slug}</p>
                           </div>
                         </div>
-                      </td>
-                      <td className="px-4 py-3">{PRODUCT_TYPE_LABELS[p.type]}</td>
-                      <td className="px-4 py-3">
-                        <span
-                          className={`inline-flex rounded-full px-2.5 py-1 text-xs font-bold ${
-                            isVigente
-                              ? "bg-emerald-100 text-emerald-800"
-                              : "bg-neutral-200 text-neutral-600"
-                          }`}
-                        >
+                      </AdminTableCell>
+                      <AdminTableCell>{PRODUCT_TYPE_LABELS[p.type]}</AdminTableCell>
+                      <AdminTableCell>
+                        <AdminBadge variant={isVigente ? "success" : "neutral"}>
                           {PRODUCT_STATUS_LABELS[p.status]}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-xs text-neutral-600">
+                        </AdminBadge>
+                      </AdminTableCell>
+                      <AdminTableCell className="text-xs text-neutral-600">
                         {p.pc3dBuilderSlot && p.pc3dBuilderSlot !== "NONE" ? (
                           PC3D_BUILDER_SLOT_LABELS[p.pc3dBuilderSlot as Pc3dBuilderSlot]
                         ) : (
@@ -562,8 +592,8 @@ export default function AdminProductosPage() {
                             {PC3D_CASE_VARIANT_LABELS[p.pc3dCaseVariant as Pc3dCaseVariant]}
                           </p>
                         ) : null}
-                      </td>
-                      <td className="px-4 py-3">
+                      </AdminTableCell>
+                      <AdminTableCell>
                         {v ? (
                           <>
                             <ProductPrice variant={v} size="sm" />
@@ -572,25 +602,17 @@ export default function AdminProductosPage() {
                         ) : (
                           "—"
                         )}
-                      </td>
-                      <td className="px-4 py-3">
+                      </AdminTableCell>
+                      <AdminTableCell>
                         {v ? (
-                          <span
-                            className={`inline-flex min-w-[3rem] justify-center rounded-full px-2.5 py-1 text-xs font-bold ${
-                              v.stock > 0
-                                ? v.stock <= 5
-                                  ? "bg-amber-100 text-amber-900"
-                                  : "bg-emerald-100 text-emerald-800"
-                                : "bg-red-100 text-red-800"
-                            }`}
-                          >
+                          <AdminBadge variant={stockVariant}>
                             {v.stock > 0 ? `${v.stock} u.` : "Sin stock"}
-                          </span>
+                          </AdminBadge>
                         ) : (
                           "—"
                         )}
-                      </td>
-                      <td className="px-4 py-3">
+                      </AdminTableCell>
+                      <AdminTableCell>
                         {canEdit ? (
                         <div className="flex flex-col gap-1">
                           <label className="cursor-pointer text-xs font-semibold text-brand">
@@ -629,44 +651,49 @@ export default function AdminProductosPage() {
                             {detailCount > 0 ? ` · ${detailCount} detalle` : ""}
                           </p>
                         ) : null}
-                      </td>
-                      <td className="px-4 py-3">
+                      </AdminTableCell>
+                      <AdminTableCell>
                         <div className="flex flex-wrap gap-1.5">
                           {canEdit ? (
-                            <button
+                            <AdminIconButton
                               type="button"
                               onClick={() => void openEditModal(p)}
-                              className="rounded-lg border border-brand/30 bg-brand/5 px-2.5 py-1.5 text-xs font-semibold text-brand-dark hover:bg-brand/15"
                             >
                               Editar
-                            </button>
+                            </AdminIconButton>
                           ) : null}
                           {canDelete && isVigente ? (
-                            <button
+                            <AdminIconButton
                               type="button"
+                              variant="danger"
                               onClick={() => setArchiveTarget(p)}
-                              className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-100"
                             >
                               Dar de baja
-                            </button>
+                            </AdminIconButton>
                           ) : null}
                           {canEdit && !isVigente ? (
-                            <button
+                            <AdminIconButton
                               type="button"
+                              variant="success"
                               onClick={() => void publishProduct(p.id)}
-                              className="rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-xs font-semibold text-emerald-800 hover:bg-emerald-100"
                             >
                               Publicar
-                            </button>
+                            </AdminIconButton>
                           ) : null}
                         </div>
-                      </td>
-                    </tr>
+                      </AdminTableCell>
+                    </AdminTableRow>
                   );
                 })}
-              </tbody>
-            </table>
-          </div>
+              </AdminTableBody>
+            </AdminTable>
+            <AdminPagination
+              page={currentPage}
+              pageSize={PAGE_SIZE}
+              totalItems={filteredProducts.length}
+              onPageChange={setPage}
+            />
+          </>
         )}
       </AdminPanel>
     </div>

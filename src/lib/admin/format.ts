@@ -1,4 +1,23 @@
 import type { OrderStatus, ProductStatus, ProductType, CategoryStatus } from "@/lib/api/types";
+import type { AdminBadgeVariant } from "@/lib/admin/design";
+
+export function orderStatusBadgeVariant(status: OrderStatus): AdminBadgeVariant {
+  switch (status) {
+    case "PAID":
+    case "DELIVERED":
+      return "success";
+    case "AWAITING_PAYMENT":
+    case "PROCESSING":
+      return "warn";
+    case "CANCELLED":
+    case "REFUNDED":
+      return "danger";
+    case "SHIPPED":
+      return "brand";
+    default:
+      return "neutral";
+  }
+}
 
 export function formatMoney(value: string | number, currency = "CLP") {
   const n = typeof value === "string" ? Number(value) : value;

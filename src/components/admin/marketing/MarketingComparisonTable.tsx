@@ -25,7 +25,7 @@ export default function MarketingComparisonTable({
   );
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-black/[0.06] bg-white shadow-sm">
+    <div className="overflow-hidden rounded-xl border border-neutral-200/80 bg-white shadow-sm">
       <div className="overflow-x-auto">
         <table className="w-full min-w-[800px] text-left text-sm">
           <thead>

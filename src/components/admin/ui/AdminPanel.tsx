@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { adminSurfaces, adminTypography } from "@/lib/admin/design";
 
 type Props = {
   title?: string;
@@ -18,17 +19,17 @@ export default function AdminPanel({
   noPadding,
 }: Props) {
   return (
-    <section
-      className={`overflow-hidden rounded-2xl border border-black/[0.06] bg-white shadow-[0_1px_3px_rgba(0,0,0,0.04)] ${className}`}
-    >
+    <section className={`overflow-hidden ${adminSurfaces.card} ${className}`}>
       {title || actions ? (
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-100 bg-neutral-50/50 px-5 py-4">
+        <div
+          className={`flex flex-wrap items-center justify-between gap-3 px-5 py-4 ${adminSurfaces.panelHeader}`}
+        >
           <div>
             {title ? (
-              <h2 className="text-base font-bold text-neutral-900">{title}</h2>
+              <h2 className={adminTypography.sectionTitle}>{title}</h2>
             ) : null}
             {description ? (
-              <p className="mt-0.5 text-sm text-neutral-500">{description}</p>
+              <p className={`mt-0.5 ${adminTypography.caption}`}>{description}</p>
             ) : null}
           </div>
           {actions}

@@ -20,6 +20,7 @@ import AdminButton from "@/components/admin/ui/AdminButton";
 import AdminLoadingSkeleton from "@/components/admin/ui/AdminLoadingSkeleton";
 import AdminPageHeader from "@/components/admin/ui/AdminPageHeader";
 import AdminPanel from "@/components/admin/ui/AdminPanel";
+import { adminPageSpacing } from "@/lib/admin/design";
 import { adminSelectClass } from "@/lib/admin/ui";
 
 export default function AdminCategoriasPage() {
@@ -147,7 +148,7 @@ export default function AdminCategoriasPage() {
   const tree = useMemo(() => buildCategoryTree(categories), [categories]);
 
   return (
-    <div className="space-y-8">
+    <div className={adminPageSpacing}>
       <AdminPageHeader
         eyebrow="Catálogo"
         title="Categorías"

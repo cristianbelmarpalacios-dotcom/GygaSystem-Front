@@ -98,7 +98,7 @@ export default function AdminNavFixedArmadorCard({
     : null;
 
   return (
-    <section className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm">
+    <section className="overflow-hidden rounded-xl border border-neutral-100 bg-white shadow-sm">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -131,7 +131,7 @@ export default function AdminNavFixedArmadorCard({
       </button>
 
       {open ? (
-        <div className="border-t border-black/5 px-4 pb-4 pt-3 sm:px-5 sm:pb-5">
+        <div className="border-t border-neutral-100 px-4 pb-4 pt-3 sm:px-5 sm:pb-5">
           {loading && !loaded ? (
             <p className="text-sm text-neutral-500">Cargando…</p>
           ) : (

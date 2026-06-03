@@ -4,8 +4,10 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FormEvent, Suspense, useEffect, useState } from "react";
 import BrandLogo from "@/components/BrandLogo";
+import AdminButton from "@/components/admin/ui/AdminButton";
 import { useAdminAuth } from "@/context/AdminAuthContext";
 import { ApiError } from "@/lib/api/client";
+import { adminForm, adminSurfaces, adminTypography } from "@/lib/admin/design";
 
 function LoginForm() {
   const { login, isStaff, loading } = useAdminAuth();
@@ -37,19 +39,21 @@ function LoginForm() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-br from-brand/10 via-white to-brand-surface px-4 py-12">
-      <div className="w-full max-w-md rounded-2xl border border-black/5 bg-white p-8 shadow-brand">
+    <div className="admin-theme flex min-h-screen flex-col items-center justify-center bg-[#f1f3f6] px-4 py-12">
+      <div className={`w-full max-w-md p-8 ${adminSurfaces.card} shadow-brand`}>
         <div className="mb-8 flex flex-col items-center">
           <BrandLogo variant="vertical" />
-          <h1 className="mt-4 text-xl font-bold text-neutral-900">Admin GIGASYSTEM</h1>
-          <p className="mt-1 text-center text-sm text-neutral-600">
+          <h1 className={`mt-4 ${adminTypography.pageTitle} text-xl sm:text-2xl`}>
+            Admin GIGASYSTEM
+          </h1>
+          <p className={`mt-1 text-center ${adminTypography.body}`}>
             Pedidos, productos y categorías del backoffice
           </p>
         </div>
 
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-neutral-700">
+            <label htmlFor="email" className={adminTypography.label}>
               Correo
             </label>
             <input
@@ -59,11 +63,11 @@ function LoginForm() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
+              className={adminForm.input}
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-neutral-700">
+            <label htmlFor="password" className={adminTypography.label}>
               Contraseña
             </label>
             <input
@@ -73,21 +77,20 @@ function LoginForm() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-neutral-200 px-3 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
+              className={adminForm.input}
             />
           </div>
           {error ? (
-            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700" role="alert">
+            <p
+              className="rounded-lg border border-red-200/80 bg-red-50 px-3 py-2 text-sm text-red-700"
+              role="alert"
+            >
               {error}
             </p>
           ) : null}
-          <button
-            type="submit"
-            disabled={submitting}
-            className="w-full rounded-xl bg-brand py-3 text-sm font-semibold text-white shadow-brand hover:bg-brand-dark disabled:opacity-60"
-          >
+          <AdminButton type="submit" disabled={submitting} className="w-full py-3">
             {submitting ? "Entrando…" : "Iniciar sesión"}
-          </button>
+          </AdminButton>
         </form>
 
         <Link

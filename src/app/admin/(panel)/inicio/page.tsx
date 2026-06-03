@@ -20,6 +20,7 @@ import {
 import AdminAlert from "@/components/admin/ui/AdminAlert";
 import AdminPageHeader from "@/components/admin/ui/AdminPageHeader";
 import AdminSegmentTabs from "@/components/admin/ui/AdminSegmentTabs";
+import { adminPageSpacing } from "@/lib/admin/design";
 import { adminInputClass } from "@/lib/admin/ui";
 
 const inputClass = adminInputClass;
@@ -310,7 +311,7 @@ export default function AdminInicioPage() {
             : grid;
 
   return (
-    <div className="space-y-8">
+    <div className={adminPageSpacing}>
       <AdminPageHeader
         eyebrow="Tienda"
         title={ADMIN_MODULE_LABELS.HOMEPAGE}
@@ -625,7 +626,7 @@ function WelcomeBackgroundPanel({
 
   return (
     <div className="space-y-4">
-      <div className="overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm">
+      <div className="overflow-hidden rounded-xl border border-neutral-100 bg-white shadow-sm">
         <div className="relative aspect-[16/10] min-h-[240px] w-full overflow-hidden bg-neutral-200 sm:min-h-[280px]">
           <WelcomeBackgroundLayer
             imageUrl={url}
@@ -633,11 +634,11 @@ function WelcomeBackgroundPanel({
             fit="contain"
           />
         </div>
-        <p className="border-b border-black/5 px-4 py-2.5 text-center text-xs text-neutral-600">
+        <p className="border-b border-neutral-100 px-4 py-2.5 text-center text-xs text-neutral-600">
           Vista previa con velo {overlay}% y difuminado {blur}px. En la tienda la imagen
           cubre todo el ancho de la sección.
         </p>
-        <div className="flex flex-wrap gap-2 border-t border-black/5 p-4">
+        <div className="flex flex-wrap gap-2 border-t border-neutral-100 p-4">
           {canEdit ? (
             <button
               type="button"
@@ -670,7 +671,7 @@ function WelcomeBackgroundPanel({
               backgroundBlurPx: blur,
             });
           }}
-          className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm"
+          className="rounded-xl border border-neutral-100 bg-white p-6 shadow-sm"
         >
           <h3 className="font-bold text-neutral-900">Ajuste visual del fondo</h3>
           <p className="mt-1 text-xs text-neutral-600">
@@ -758,7 +759,7 @@ function SectionMetaForm({
         e.preventDefault();
         onSave({ title, subtitle, isActive });
       }}
-      className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm"
+      className="rounded-xl border border-neutral-100 bg-white p-6 shadow-sm"
     >
       <div className="grid gap-4 md:grid-cols-2">
         <label className="text-sm">

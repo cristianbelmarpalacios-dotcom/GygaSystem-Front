@@ -131,8 +131,8 @@ export default function RoleEditorModal({
         className="absolute inset-0 bg-black/45 backdrop-blur-[2px]"
         onClick={() => !saving && onClose()}
       />
-      <div className="relative flex max-h-[min(92vh,880px)] w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
-        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-black/5 bg-gradient-to-r from-brand/10 via-white to-violet-50 px-6 py-5">
+      <div className="relative flex max-h-[min(92vh,880px)] w-full max-w-4xl flex-col overflow-hidden rounded-xl bg-white shadow-2xl">
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-neutral-100 bg-gradient-to-r from-brand/10 via-white to-violet-50 px-6 py-5">
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand-dark">
               {mode === "create" ? "Nuevo perfil" : mode === "view" ? "Consulta" : "Edición"}
@@ -155,7 +155,7 @@ export default function RoleEditorModal({
         </div>
 
         <form onSubmit={onSubmit} className="flex min-h-0 flex-1 flex-col">
-          <div className="grid shrink-0 gap-4 border-b border-black/5 px-6 py-4 md:grid-cols-2">
+          <div className="grid shrink-0 gap-4 border-b border-neutral-100 px-6 py-4 md:grid-cols-2">
             <label className="text-sm">
               <span className="font-medium text-neutral-700">Nombre del perfil</span>
               <input
@@ -181,7 +181,7 @@ export default function RoleEditorModal({
 
           <div className="flex min-h-0 flex-1 flex-col md:flex-row">
             <nav
-              className="flex shrink-0 gap-1 overflow-x-auto border-b border-black/5 p-2 md:w-52 md:flex-col md:border-b-0 md:border-r md:p-3"
+              className="flex shrink-0 gap-1 overflow-x-auto border-b border-neutral-100 p-2 md:w-52 md:flex-col md:border-b-0 md:border-r md:p-3"
               aria-label="Pantallas del admin"
             >
               {ADMIN_MODULES_ORDER.map((module) => {
@@ -235,7 +235,7 @@ export default function RoleEditorModal({
                           !editDisabled &&
                           setPerm(activeTab, meta.key, !checked)
                         }
-                        className={`flex w-full items-start gap-4 rounded-2xl border p-4 text-left transition-all ${
+                        className={`flex w-full items-start gap-4 rounded-xl border p-4 text-left transition-all ${
                           checked ? meta.active : "border-neutral-200 bg-white hover:border-neutral-300"
                         } ${editDisabled ? "cursor-not-allowed opacity-60" : ""}`}
                       >
@@ -262,7 +262,7 @@ export default function RoleEditorModal({
             </div>
           </div>
 
-          <div className="flex shrink-0 flex-wrap gap-3 border-t border-black/5 bg-neutral-50/80 px-6 py-4">
+          <div className="flex shrink-0 flex-wrap gap-3 border-t border-neutral-100 bg-neutral-50/80 px-6 py-4">
             {!disabled ? (
               <button
                 type="submit"

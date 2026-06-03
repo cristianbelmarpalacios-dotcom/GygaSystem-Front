@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { useAdminAuth } from "@/context/AdminAuthContext";
 import {
   type AdminModuleKey,
@@ -8,6 +8,7 @@ import {
   buildPermissionMap,
   can,
 } from "@/lib/admin/permissions";
+
 export function useAdminPermissions() {
   const { user } = useAdminAuth();
 
@@ -16,8 +17,11 @@ export function useAdminPermissions() {
     [user?.permissions],
   );
 
-  const check = (module: AdminModuleKey, action: PermissionAction) =>
-    can(permissionMap, module, action);
+  const check = useCallback(
+    (module: AdminModuleKey, action: PermissionAction) =>
+      can(permissionMap, module, action),
+    [permissionMap],
+  );
 
   return { permissionMap, can: check };
 }

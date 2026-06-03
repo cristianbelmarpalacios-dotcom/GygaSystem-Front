@@ -14,7 +14,19 @@ import AdminAlert from "@/components/admin/ui/AdminAlert";
 import AdminLoadingSkeleton from "@/components/admin/ui/AdminLoadingSkeleton";
 import AdminPageHeader from "@/components/admin/ui/AdminPageHeader";
 import AdminPanel from "@/components/admin/ui/AdminPanel";
-import { adminInputClass, adminSelectClass, adminTableHeadClass, adminTableRowClass, adminLabelClass } from "@/lib/admin/ui";
+import AdminBadge from "@/components/admin/ui/AdminBadge";
+import AdminButton from "@/components/admin/ui/AdminButton";
+import AdminEmptyState from "@/components/admin/ui/AdminEmptyState";
+import AdminTable, {
+  AdminTableBody,
+  AdminTableCell,
+  AdminTableHead,
+  AdminTableHeadCell,
+  AdminTableRow,
+} from "@/components/admin/ui/AdminTable";
+import { adminPageSpacing } from "@/lib/admin/design";
+import { adminInputClass, adminSelectClass, adminLabelClass } from "@/lib/admin/ui";
+import { orderStatusBadgeVariant } from "@/lib/admin/format";
 
 const STATUS_OPTIONS = Object.keys(ORDER_STATUS_LABELS) as OrderStatus[];
 
@@ -72,7 +84,7 @@ export default function AdminPedidosPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className={adminPageSpacing}>
       <AdminPageHeader
         eyebrow="Ventas"
         title="Pedidos y ventas"
@@ -103,49 +115,51 @@ export default function AdminPedidosPage() {
           {loading ? (
             <AdminLoadingSkeleton rows={6} />
           ) : orders.length === 0 ? (
-            <p className="p-6 text-sm text-neutral-500">No hay pedidos con este filtro.</p>
+            <AdminEmptyState description="No hay pedidos con este filtro." />
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[520px] text-left text-sm">
-                <thead className={adminTableHeadClass}>
-                  <tr>
-                    <th className="px-4 py-3">Pedido</th>
-                    <th className="px-4 py-3">Cliente</th>
-                    <th className="px-4 py-3">Estado</th>
-                    <th className="px-4 py-3">Total</th>
-                    <th className="px-4 py-3">Fecha</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {orders.map((order) => (
-                    <tr
-                      key={order.id}
-                      onClick={() => {
-                        setSelectedId(order.id);
-                        setNewStatus(order.status);
-                      }}
-                      className={`cursor-pointer ${adminTableRowClass} ${
-                        selectedId === order.id ? "bg-brand/10" : ""
-                      }`}
-                    >
-                      <td className="px-4 py-3 font-mono text-xs font-semibold">
-                        {order.orderNumber}
-                      </td>
-                      <td className="max-w-[140px] truncate px-4 py-3 text-neutral-700">
-                        {customerLabel(order)}
-                      </td>
-                      <td className="px-4 py-3">{ORDER_STATUS_LABELS[order.status]}</td>
-                      <td className="px-4 py-3 font-medium">
-                        {formatMoney(order.grandTotal, order.currency)}
-                      </td>
-                      <td className="px-4 py-3 text-neutral-500">
-                        {formatDate(order.createdAt)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <AdminTable minWidth="520px">
+              <AdminTableHead>
+                <tr>
+                  <AdminTableHeadCell>Pedido</AdminTableHeadCell>
+                  <AdminTableHeadCell>Cliente</AdminTableHeadCell>
+                  <AdminTableHeadCell>Estado</AdminTableHeadCell>
+                  <AdminTableHeadCell>Total</AdminTableHeadCell>
+                  <AdminTableHeadCell>Fecha</AdminTableHeadCell>
+                </tr>
+              </AdminTableHead>
+              <AdminTableBody>
+                {orders.map((order) => (
+                  <AdminTableRow
+                    key={order.id}
+                    onClick={() => {
+                      setSelectedId(order.id);
+                      setNewStatus(order.status);
+                    }}
+                    className={`cursor-pointer ${
+                      selectedId === order.id ? "bg-brand/10" : ""
+                    }`}
+                  >
+                    <AdminTableCell className="font-mono text-xs font-semibold">
+                      {order.orderNumber}
+                    </AdminTableCell>
+                    <AdminTableCell className="max-w-[140px] truncate text-neutral-700">
+                      {customerLabel(order)}
+                    </AdminTableCell>
+                    <AdminTableCell>
+                      <AdminBadge variant={orderStatusBadgeVariant(order.status)}>
+                        {ORDER_STATUS_LABELS[order.status]}
+                      </AdminBadge>
+                    </AdminTableCell>
+                    <AdminTableCell className="font-medium tabular-nums">
+                      {formatMoney(order.grandTotal, order.currency)}
+                    </AdminTableCell>
+                    <AdminTableCell className="text-neutral-500">
+                      {formatDate(order.createdAt)}
+                    </AdminTableCell>
+                  </AdminTableRow>
+                ))}
+              </AdminTableBody>
+            </AdminTable>
           )}
         </AdminPanel>
 
@@ -170,7 +184,7 @@ export default function AdminPedidosPage() {
                   {selected.lines.map((line) => (
                     <li
                       key={line.id}
-                      className="rounded-lg border border-black/5 bg-neutral-50 px-3 py-2 text-sm"
+                      className="rounded-lg border border-neutral-100 bg-neutral-50 px-3 py-2 text-sm"
                     >
                       <p className="font-medium text-neutral-900">{line.productName}</p>
                       <p className="text-xs text-neutral-600">
@@ -196,7 +210,7 @@ export default function AdminPedidosPage() {
               ) : null}
 
               {canEdit ? (
-              <div className="border-t border-black/5 pt-4">
+              <div className="border-t border-neutral-100 pt-4">
                 <label className="block text-sm font-medium text-neutral-700">
                   Nuevo estado
                 </label>
@@ -221,17 +235,17 @@ export default function AdminPedidosPage() {
                   className={adminInputClass}
                   placeholder="Ej. enviado con Starken…"
                 />
-                <button
+                <AdminButton
                   type="button"
                   disabled={saving}
                   onClick={() => void saveStatus()}
-                  className="mt-3 w-full rounded-xl bg-brand py-2.5 text-sm font-semibold text-white hover:bg-brand-dark disabled:opacity-60"
+                  className="mt-3 w-full"
                 >
                   {saving ? "Guardando…" : "Actualizar estado"}
-                </button>
+                </AdminButton>
               </div>
               ) : (
-                <p className="border-t border-black/5 pt-4 text-sm text-neutral-500">
+                <p className="border-t border-neutral-100 pt-4 text-sm text-neutral-500">
                   Solo lectura: no puedes cambiar el estado de pedidos.
                 </p>
               )}

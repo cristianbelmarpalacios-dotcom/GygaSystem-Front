@@ -1,26 +1,27 @@
 import type { ReactNode } from "react";
+import { adminSurfaces, adminTypography } from "@/lib/admin/design";
 
 type Tone = "brand" | "store" | "neutral" | "warn";
 
 const TONE: Record<Tone, { ring: string; icon: string; value: string }> = {
   brand: {
     ring: "ring-brand/20",
-    icon: "bg-brand/15 text-brand-dark",
+    icon: "bg-brand/12 text-brand-dark",
     value: "text-brand-dark",
   },
   store: {
     ring: "ring-emerald-500/20",
-    icon: "bg-emerald-500/15 text-emerald-800",
+    icon: "bg-emerald-500/12 text-emerald-800",
     value: "text-neutral-900",
   },
   neutral: {
-    ring: "ring-black/5",
+    ring: "ring-neutral-200/80",
     icon: "bg-neutral-100 text-neutral-600",
     value: "text-neutral-900",
   },
   warn: {
     ring: "ring-amber-500/25",
-    icon: "bg-amber-500/15 text-amber-900",
+    icon: "bg-amber-500/12 text-amber-900",
     value: "text-neutral-900",
   },
 };
@@ -43,23 +44,25 @@ export default function AdminStatCard({
   const s = TONE[tone];
   return (
     <div
-      className={`relative overflow-hidden rounded-2xl border border-black/[0.06] bg-white p-5 shadow-[0_1px_3px_rgba(0,0,0,0.04),0_8px_24px_rgba(155,123,182,0.06)] ring-1 ${s.ring}`}
+      className={`relative overflow-hidden p-5 ring-1 ${adminSurfaces.card} ${s.ring}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-neutral-500">
             {label}
           </p>
-          <p className={`mt-2 text-2xl font-bold tabular-nums tracking-tight ${s.value}`}>
+          <p
+            className={`mt-2 text-2xl font-bold tabular-nums tracking-tight ${s.value}`}
+          >
             {value}
           </p>
           {sub ? (
-            <p className="mt-1.5 text-xs leading-relaxed text-neutral-500">{sub}</p>
+            <p className={`mt-1.5 ${adminTypography.caption}`}>{sub}</p>
           ) : null}
         </div>
         {icon ? (
           <div
-            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${s.icon}`}
+            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${s.icon}`}
           >
             {icon}
           </div>

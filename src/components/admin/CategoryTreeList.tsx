@@ -146,8 +146,8 @@ export default function CategoryTreeList({
           return (
             <li
               key={category.id}
-              className={`overflow-hidden rounded-2xl border shadow-sm ${
-                isVigente ? "border-black/5 bg-white" : "border-black/5 bg-neutral-50/90"
+              className={`overflow-hidden rounded-xl border shadow-sm ${
+                isVigente ? "border-neutral-100 bg-white" : "border-neutral-100 bg-neutral-50/90"
               }`}
             >
               <div className="flex flex-wrap items-center gap-3 p-4 sm:flex-nowrap sm:gap-4">
@@ -226,13 +226,13 @@ export default function CategoryTreeList({
               </div>
 
               {hasChildren && isOpen ? (
-                <ul className="border-t border-black/5 bg-neutral-50/50">
+                <ul className="border-t border-neutral-100 bg-neutral-50/50">
                   {children.map((child) => {
                     const childVigente = child.status === "PUBLISHED";
                     return (
                       <li
                         key={child.id}
-                        className={`border-b border-black/5 last:border-b-0 ${
+                        className={`border-b border-neutral-100 last:border-b-0 ${
                           childVigente ? "bg-white" : "bg-neutral-50/80"
                         }`}
                       >

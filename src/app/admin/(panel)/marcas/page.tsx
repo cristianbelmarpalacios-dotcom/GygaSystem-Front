@@ -9,6 +9,8 @@ import AdminButton from "@/components/admin/ui/AdminButton";
 import AdminLoadingSkeleton from "@/components/admin/ui/AdminLoadingSkeleton";
 import AdminPageHeader from "@/components/admin/ui/AdminPageHeader";
 import AdminPanel from "@/components/admin/ui/AdminPanel";
+import AdminEmptyState from "@/components/admin/ui/AdminEmptyState";
+import { adminPageSpacing } from "@/lib/admin/design";
 import { adminInputClass, adminLabelClass } from "@/lib/admin/ui";
 
 export default function AdminMarcasPage() {
@@ -61,7 +63,7 @@ export default function AdminMarcasPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className={adminPageSpacing}>
       <AdminPageHeader
         eyebrow="Catálogo"
         title="Marcas"
@@ -102,9 +104,7 @@ export default function AdminMarcasPage() {
         {loading ? (
           <AdminLoadingSkeleton rows={5} />
         ) : brands.length === 0 ? (
-          <p className="p-6 text-sm text-neutral-500">
-            Aún no hay marcas. Crea la primera arriba.
-          </p>
+          <AdminEmptyState description="Aún no hay marcas. Crea la primera arriba." />
         ) : (
           <ul className="divide-y divide-neutral-100">
             {brands.map((brand) => (

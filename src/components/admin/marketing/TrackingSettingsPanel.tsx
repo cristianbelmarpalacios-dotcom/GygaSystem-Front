@@ -42,7 +42,7 @@ export default function TrackingSettingsPanel({
   return (
     <form
       onSubmit={handleSubmit}
-      className="rounded-2xl border border-black/5 bg-white p-6 shadow-sm"
+      className="rounded-xl border border-neutral-200/80 bg-white p-6 shadow-sm"
     >
       <h2 className="text-lg font-bold text-neutral-900">
         Píxeles y etiquetas en la tienda

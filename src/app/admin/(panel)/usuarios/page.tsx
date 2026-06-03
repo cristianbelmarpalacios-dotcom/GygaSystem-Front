@@ -7,7 +7,16 @@ import AdminButton from "@/components/admin/ui/AdminButton";
 import AdminLoadingSkeleton from "@/components/admin/ui/AdminLoadingSkeleton";
 import AdminPageHeader from "@/components/admin/ui/AdminPageHeader";
 import AdminPanel from "@/components/admin/ui/AdminPanel";
-import { adminInputClass, adminLabelClass, adminSelectClass, adminTableHeadClass, adminTableRowClass } from "@/lib/admin/ui";
+import AdminBadge from "@/components/admin/ui/AdminBadge";
+import AdminTable, {
+  AdminTableBody,
+  AdminTableCell,
+  AdminTableHead,
+  AdminTableHeadCell,
+  AdminTableRow,
+} from "@/components/admin/ui/AdminTable";
+import { adminPageSpacing } from "@/lib/admin/design";
+import { adminInputClass, adminLabelClass, adminSelectClass } from "@/lib/admin/ui";
 import { apiFetch } from "@/lib/api/client";
 import type { UserRole } from "@/lib/api/types";
 
@@ -119,7 +128,7 @@ export default function AdminUsuariosPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className={adminPageSpacing}>
       <AdminPageHeader
         eyebrow="Acceso"
         title="Usuarios del admin"
@@ -219,27 +228,26 @@ export default function AdminUsuariosPage() {
         {loading ? (
           <AdminLoadingSkeleton rows={5} />
         ) : (
-          <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className={adminTableHeadClass}>
+          <AdminTable>
+            <AdminTableHead>
               <tr>
-                <th className="px-4 py-3">Usuario</th>
-                <th className="px-4 py-3">Rol permisos</th>
-                <th className="px-4 py-3">Estado</th>
-                {canEdit ? <th className="px-4 py-3">Acciones</th> : null}
+                <AdminTableHeadCell>Usuario</AdminTableHeadCell>
+                <AdminTableHeadCell>Rol permisos</AdminTableHeadCell>
+                <AdminTableHeadCell>Estado</AdminTableHeadCell>
+                {canEdit ? <AdminTableHeadCell>Acciones</AdminTableHeadCell> : null}
               </tr>
-            </thead>
-            <tbody>
+            </AdminTableHead>
+            <AdminTableBody>
               {users.map((u) => (
-                <tr key={u.id} className={adminTableRowClass}>
-                  <td className="px-4 py-3">
+                <AdminTableRow key={u.id}>
+                  <AdminTableCell>
                     <p className="font-medium">{u.email}</p>
                     <p className="text-xs text-neutral-500">
                       {[u.firstName, u.lastName].filter(Boolean).join(" ") || "—"} ·{" "}
                       {u.role}
                     </p>
-                  </td>
-                  <td className="px-4 py-3">
+                  </AdminTableCell>
+                  <AdminTableCell>
                     {canEdit ? (
                       <select
                         value={u.adminRole?.id ?? ""}
@@ -259,37 +267,30 @@ export default function AdminUsuariosPage() {
                     ) : (
                       (u.adminRole?.name ?? "—")
                     )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`rounded-full px-2 py-1 text-xs font-bold ${
-                        u.isActive
-                          ? "bg-emerald-100 text-emerald-800"
-                          : "bg-neutral-200 text-neutral-600"
-                      }`}
-                    >
+                  </AdminTableCell>
+                  <AdminTableCell>
+                    <AdminBadge variant={u.isActive ? "success" : "neutral"}>
                       {u.isActive ? "Activo" : "Inactivo"}
-                    </span>
-                  </td>
+                    </AdminBadge>
+                  </AdminTableCell>
                   {canEdit ? (
-                    <td className="px-4 py-3">
+                    <AdminTableCell>
                       <button
                         type="button"
                         disabled={saving}
                         onClick={() =>
                           void updateUser(u.id, { isActive: !u.isActive })
                         }
-                        className="text-xs font-semibold text-brand"
+                        className="text-xs font-semibold text-brand-dark hover:underline"
                       >
                         {u.isActive ? "Desactivar" : "Activar"}
                       </button>
-                    </td>
+                    </AdminTableCell>
                   ) : null}
-                </tr>
+                </AdminTableRow>
               ))}
-            </tbody>
-          </table>
-          </div>
+            </AdminTableBody>
+          </AdminTable>
         )}
       </AdminPanel>
     </div>

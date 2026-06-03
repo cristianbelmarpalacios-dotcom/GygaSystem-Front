@@ -86,8 +86,8 @@ export default function AdminCategoryFormModal({
         className="absolute inset-0 bg-black/40"
         onClick={onClose}
       />
-      <div className="relative w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl">
-        <div className="flex items-center justify-between border-b border-black/5 bg-gradient-to-r from-brand/10 to-white px-6 py-4">
+      <div className="relative w-full max-w-lg overflow-hidden rounded-xl bg-white shadow-2xl">
+        <div className="flex items-center justify-between border-b border-neutral-100 bg-gradient-to-r from-brand/10 to-white px-6 py-4">
           <div>
             <h2 className="text-lg font-bold text-neutral-900">{title}</h2>
             <p className="text-xs text-neutral-500">
@@ -239,7 +239,7 @@ export default function AdminCategoryFormModal({
             </p>
           )}
 
-          <div className="flex flex-wrap justify-end gap-2 border-t border-black/5 pt-4">
+          <div className="flex flex-wrap justify-end gap-2 border-t border-neutral-100 pt-4">
             <button
               type="button"
               onClick={onClose}

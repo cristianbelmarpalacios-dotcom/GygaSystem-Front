@@ -33,23 +33,23 @@ export default function AdminUserBar({ user, variant = "bar" }: Props) {
 
   if (variant === "card") {
     return (
-      <div className="rounded-xl border border-brand/15 bg-gradient-to-br from-brand/5 to-violet-50/50 p-3">
+      <div className="rounded-xl border border-neutral-200/80 bg-neutral-50/80 p-3">
         <div className="flex items-center gap-3">
           <span
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand text-sm font-bold text-white shadow-sm"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand to-brand-dark text-sm font-bold text-white shadow-sm"
             aria-hidden
           >
             {initials(user)}
           </span>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-bold text-neutral-900">{name}</p>
-            <p className="truncate text-xs text-neutral-600">{user.email}</p>
+            <p className="truncate text-sm font-semibold text-neutral-900">{name}</p>
+            <p className="truncate text-xs text-neutral-500">{user.email}</p>
           </div>
         </div>
-        <p className="mt-2.5 text-[10px] font-semibold uppercase tracking-wide text-neutral-500">
+        <p className="mt-2.5 text-[10px] font-semibold uppercase tracking-wide text-neutral-400">
           Conectado como
         </p>
-        <p className="mt-0.5 inline-flex max-w-full truncate rounded-full bg-white/80 px-2.5 py-1 text-xs font-semibold text-brand-dark ring-1 ring-brand/20">
+        <p className="mt-1 inline-flex max-w-full truncate rounded-md bg-white px-2 py-0.5 text-xs font-medium text-brand-dark ring-1 ring-neutral-200">
           {profile}
         </p>
       </div>

@@ -8,7 +8,7 @@ export default function AdminLoadingSkeleton({
       {Array.from({ length: rows }).map((_, i) => (
         <div
           key={i}
-          className="h-10 animate-pulse rounded-lg bg-neutral-100"
+          className="admin-skeleton-shimmer h-10 rounded-lg"
           style={{ width: `${88 - i * 8}%` }}
         />
       ))}

@@ -1,10 +1,14 @@
-type Variant = "error" | "success" | "info" | "warn";
+import { AlertCircle, CheckCircle2, Info, TriangleAlert } from "lucide-react";
+import type { ReactNode } from "react";
+import { adminAlertBase, adminAlertVariants } from "@/lib/admin/design";
 
-const STYLES: Record<Variant, string> = {
-  error: "border-red-200 bg-red-50 text-red-800",
-  success: "border-emerald-200 bg-emerald-50 text-emerald-900",
-  info: "border-sky-200 bg-sky-50 text-sky-950",
-  warn: "border-amber-200 bg-amber-50 text-amber-950",
+type Variant = keyof typeof adminAlertVariants;
+
+const ICONS: Record<Variant, typeof Info> = {
+  error: AlertCircle,
+  success: CheckCircle2,
+  info: Info,
+  warn: TriangleAlert,
 };
 
 export default function AdminAlert({
@@ -14,12 +18,14 @@ export default function AdminAlert({
   variant: Variant;
   children: React.ReactNode;
 }) {
+  const Icon = ICONS[variant];
   return (
     <div
-      className={`rounded-xl border px-4 py-3 text-sm leading-relaxed ${STYLES[variant]}`}
+      className={`${adminAlertBase} ${adminAlertVariants[variant]}`}
       role={variant === "error" ? "alert" : undefined}
     >
-      {children}
+      <Icon className="mt-0.5 h-5 w-5 shrink-0 opacity-80" aria-hidden />
+      <div className="min-w-0 flex-1">{children}</div>
     </div>
   );
 }

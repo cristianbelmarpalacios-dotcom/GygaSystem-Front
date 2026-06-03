@@ -59,7 +59,7 @@ export default function AdminProductPreview({
 
   return (
     <div className="flex h-full min-h-0 flex-col bg-neutral-100">
-      <div className="shrink-0 border-b border-black/5 bg-brand/10 px-4 py-2.5 text-center">
+      <div className="shrink-0 border-b border-neutral-100 bg-brand/10 px-4 py-2.5 text-center">
         <p className="text-xs font-bold uppercase tracking-wide text-brand-dark">
           Vista previa en tienda
         </p>

@@ -3,39 +3,40 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
+import AdminAlert from "@/components/admin/ui/AdminAlert";
 import { useAdminAuth } from "@/context/AdminAuthContext";
 import { useAdminPermissions } from "@/hooks/useAdminPermissions";
-import { pathToModule } from "@/lib/admin/permissions";
+import { can, pathToModule } from "@/lib/admin/permissions";
 
 export default function AdminModuleGuard({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const { loading, isStaff } = useAdminAuth();
-  const { can } = useAdminPermissions();
+  const { permissionMap } = useAdminPermissions();
   const module = pathToModule(pathname ?? "");
+  const canViewModule =
+    !module || can(permissionMap, module, "view");
 
   useEffect(() => {
-    if (loading || !isStaff || !module) return;
-    if (!can(module, "view")) {
-      router.replace("/admin");
-    }
-  }, [loading, isStaff, module, can, router]);
+    if (loading || !isStaff || !module || canViewModule) return;
+    router.replace("/admin");
+  }, [loading, isStaff, module, canViewModule, router]);
 
   if (loading) {
     return <p className="text-sm text-neutral-500">Cargando permisos…</p>;
   }
 
-  if (module && !can(module, "view")) {
+  if (module && !canViewModule) {
     return (
-      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-sm text-amber-900">
+      <AdminAlert variant="warn">
         <p className="font-semibold">Sin permiso para esta sección</p>
         <p className="mt-2">Tu rol no incluye acceso a esta pantalla.</p>
-        <Link href="/admin" className="mt-4 inline-block font-semibold text-brand">
+        <Link href="/admin" className="mt-3 inline-block font-semibold text-brand-dark">
           Volver al resumen
         </Link>
-      </div>
+      </AdminAlert>
     );
   }
 
-  return <>{children}</>;
+  return <div key={pathname ?? "admin"}>{children}</div>;
 }

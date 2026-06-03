@@ -15,6 +15,7 @@ import { apiFetch } from "@/lib/api/client";
 import { formatRoas, formatSpend } from "@/lib/marketing/format";
 import { PERIOD_OPTIONS } from "@/lib/marketing/labels";
 import type { MarketingHub, MarketingPlatform } from "@/lib/marketing/types";
+import { adminPageSpacing } from "@/lib/admin/design";
 
 type Tab = "resumen" | "plataformas" | "config";
 
@@ -142,8 +143,8 @@ export default function AdminMarketingPage() {
   const summary = hub?.summary;
 
   return (
-    <div className="space-y-8">
-      <header className="relative overflow-hidden rounded-2xl border border-brand/15 bg-gradient-to-br from-neutral-950 via-neutral-900 to-brand/40 px-6 py-8 text-white shadow-[0_20px_50px_rgba(89,55,114,0.25)] sm:px-8">
+    <div className={adminPageSpacing}>
+      <header className="relative overflow-hidden rounded-xl border border-brand/15 bg-gradient-to-br from-neutral-950 via-neutral-900 to-brand/40 px-6 py-8 text-white shadow-[0_20px_50px_rgba(89,55,114,0.25)] sm:px-8">
         <div className="relative z-10 flex flex-wrap items-end justify-between gap-6">
           <div>
             <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-brand-light">
@@ -217,14 +218,14 @@ export default function AdminMarketingPage() {
           {Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="h-28 animate-pulse rounded-2xl bg-neutral-200/60"
+              className="h-28 animate-pulse admin-skeleton-shimmer rounded-xl"
             />
           ))}
         </div>
       ) : !hub ? null : (
         <>
           {tab === "resumen" ? (
-            <div className="space-y-8">
+            <div className={adminPageSpacing}>
               <p className="text-sm text-neutral-600">
                 <strong className="text-neutral-800">Resumen:</strong> ventas de tu
                 tienda (pedidos en base de datos). Para alcance y publicidad, usa la
@@ -286,7 +287,7 @@ export default function AdminMarketingPage() {
               </section>
 
               <div className="grid gap-6 lg:grid-cols-5">
-                <section className="rounded-2xl border border-black/[0.06] bg-white p-6 shadow-sm lg:col-span-3">
+                <section className="rounded-xl border border-neutral-200/80 bg-white p-6 shadow-sm lg:col-span-3">
                   <h2 className="text-base font-bold text-neutral-900">
                     Ingresos en el tiempo
                   </h2>
@@ -301,7 +302,7 @@ export default function AdminMarketingPage() {
                   </div>
                 </section>
 
-                <section className="rounded-2xl border border-black/[0.06] bg-white p-6 shadow-sm lg:col-span-2">
+                <section className="rounded-xl border border-neutral-200/80 bg-white p-6 shadow-sm lg:col-span-2">
                   <h2 className="text-base font-bold text-neutral-900">
                     Embudo de compra
                   </h2>

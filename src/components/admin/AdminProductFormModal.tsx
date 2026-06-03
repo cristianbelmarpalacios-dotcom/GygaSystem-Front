@@ -25,12 +25,11 @@ import {
   type ProductFormState,
 } from "@/components/admin/admin-product-form";
 import type { ProductStatus, ProductType } from "@/lib/api/types";
+import { adminForm } from "@/lib/admin/design";
 
 const PRODUCT_TYPES = Object.keys(PRODUCT_TYPE_LABELS) as ProductType[];
 const PRODUCT_STATUSES = Object.keys(PRODUCT_STATUS_LABELS) as ProductStatus[];
-
-const inputClass =
-  "mt-1 w-full rounded-xl border border-neutral-200 px-3 py-2.5 text-sm focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20";
+const inputClass = adminForm.input;
 
 type Props = {
   open: boolean;
@@ -103,8 +102,8 @@ export default function AdminProductFormModal({
         className="absolute inset-0 bg-black/40"
         onClick={onClose}
       />
-      <div className="relative flex max-h-[min(92vh,920px)] w-full max-w-[min(96vw,1280px)] flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
-        <div className="flex shrink-0 items-center justify-between border-b border-black/5 bg-gradient-to-r from-brand/10 to-white px-6 py-4">
+      <div className="relative flex max-h-[min(92vh,920px)] w-full max-w-[min(96vw,1280px)] flex-col overflow-hidden rounded-xl bg-white shadow-2xl">
+        <div className="flex shrink-0 items-center justify-between border-b border-neutral-100 bg-gradient-to-r from-brand/10 to-white px-6 py-4">
           <div>
             <h2 className="text-lg font-bold text-neutral-900">{title}</h2>
             <p className="text-xs text-neutral-500">
@@ -242,7 +241,7 @@ export default function AdminProductFormModal({
             />
           </label>
 
-          <section className="md:col-span-2 mt-2 border-t border-black/5 pt-4">
+          <section className="md:col-span-2 mt-2 border-t border-neutral-100 pt-4">
             <h3 className="text-xs font-bold uppercase tracking-wide text-brand-dark">
               Precio y stock
             </h3>
@@ -295,7 +294,7 @@ export default function AdminProductFormModal({
 
           {form.type === "PC_COMPONENT" ? (
             <>
-              <section className="md:col-span-2 mt-2 border-t border-black/5 pt-4">
+              <section className="md:col-span-2 mt-2 border-t border-neutral-100 pt-4">
                 <h3 className="text-xs font-bold uppercase tracking-wide text-brand-dark">
                   Armado 3D
                 </h3>
@@ -376,7 +375,7 @@ export default function AdminProductFormModal({
           ) : null}
 
           {showImages ? (
-            <div className="md:col-span-2 space-y-5 border-t border-black/5 pt-4">
+            <div className="md:col-span-2 space-y-5 border-t border-neutral-100 pt-4">
               <section>
                 <h3 className="text-xs font-bold uppercase tracking-wide text-brand-dark">
                   Imágenes
@@ -400,7 +399,7 @@ export default function AdminProductFormModal({
                         <img
                           src={img.url}
                           alt=""
-                          className="h-16 w-16 rounded-lg border border-black/5 object-cover"
+                          className="h-16 w-16 rounded-lg border border-neutral-100 object-cover"
                         />
                         {img.role === "MAIN" ? (
                           <span className="absolute left-1 top-1 rounded bg-brand px-1 text-[10px] font-bold text-white">
@@ -442,7 +441,7 @@ export default function AdminProductFormModal({
                         <img
                           src={img.url}
                           alt=""
-                          className="h-16 w-24 rounded-lg border border-black/5 object-cover"
+                          className="h-16 w-24 rounded-lg border border-neutral-100 object-cover"
                         />
                       </li>
                     ))}
@@ -475,7 +474,7 @@ export default function AdminProductFormModal({
             </div>
           ) : null}
 
-          <div className="flex flex-wrap gap-3 md:col-span-2 border-t border-black/5 pt-4">
+          <div className="flex flex-wrap gap-3 md:col-span-2 border-t border-neutral-100 pt-4">
             <button
               type="submit"
               disabled={saving}
@@ -495,7 +494,7 @@ export default function AdminProductFormModal({
         </form>
 
           <aside
-            className={`min-h-0 border-t border-black/5 lg:flex lg:w-1/2 lg:border-l lg:border-t-0 ${
+            className={`min-h-0 border-t border-neutral-100 lg:flex lg:w-1/2 lg:border-l lg:border-t-0 ${
               mobilePreview ? "flex flex-1 flex-col" : "hidden"
             }`}
           >

@@ -146,5 +146,35 @@ body {
   .animate-cart-badge-pop {
     animation: cart-badge-pop 0.45s cubic-bezier(0.34, 1.4, 0.64, 1);
   }
+
+  /* Backoffice: tokens CSS alineados a marca */
+  .admin-theme {
+    --admin-brand: #9b7bb6;
+    --admin-brand-dark: #7f6394;
+    --admin-brand-light: #c4a9d9;
+    --admin-surface: #f1f3f6;
+    --admin-card: #ffffff;
+    --admin-focus-ring: rgba(155, 123, 182, 0.25);
+  }
+
+  .admin-theme .admin-skeleton-shimmer {
+    background: linear-gradient(
+      90deg,
+      rgb(245 245 245) 0%,
+      rgb(250 248 252) 50%,
+      rgb(245 245 245) 100%
+    );
+    background-size: 200% 100%;
+    animation: admin-shimmer 1.4s ease-in-out infinite;
+  }
+
+  @keyframes admin-shimmer {
+    0% {
+      background-position: 100% 0;
+    }
+    100% {
+      background-position: -100% 0;
+    }
+  }
 }
 
