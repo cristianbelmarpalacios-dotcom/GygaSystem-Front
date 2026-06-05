@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import AddToCartControls from "@/components/cart/AddToCartControls";
 import ProductPrice, { ProductStockBadge } from "@/components/catalog/ProductPrice";
 import { formatMoney } from "@/lib/admin/format";
-import { getVariantPricing } from "@/lib/catalog/pricing";
+import { getStockUrgencyLabel, getVariantPricing } from "@/lib/catalog/pricing";
 import type { PublicProduct } from "@/lib/catalog/types";
 
 type Props = {
@@ -66,9 +66,9 @@ export default function ProductPurchasePanel({ product, preview = false }: Props
                       {formatMoney(pricing.price)}
                     </p>
                     <p className="mt-0.5 text-[11px] font-medium text-neutral-500">
-                      {pricing.inStock
-                        ? `${pricing.stock} en stock`
-                        : "Agotado"}
+                      {!pricing.inStock
+                        ? "Agotado"
+                        : (getStockUrgencyLabel(pricing.stock) ?? "Disponible")}
                     </p>
                   </div>
                 </button>

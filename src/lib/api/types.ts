@@ -47,6 +47,25 @@ export type AdminOrder = {
   grandTotal: string | number;
   currency: string;
   createdAt: string;
+  billingAddress?: {
+    documentType?: "boleta" | "factura";
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+    taxId?: string | null;
+    businessName?: string | null;
+    businessActivity?: string | null;
+    line1?: string | null;
+    city?: string | null;
+    state?: string | null;
+  } | null;
+  shippingAddress?: {
+    email?: string;
+    recipient?: string;
+    line1?: string | null;
+    city?: string | null;
+    phone?: string | null;
+  } | null;
   user: {
     id: string;
     email: string;

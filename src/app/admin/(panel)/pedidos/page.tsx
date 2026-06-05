@@ -27,6 +27,10 @@ import AdminTable, {
 import { adminPageSpacing } from "@/lib/admin/design";
 import { adminInputClass, adminSelectClass, adminLabelClass } from "@/lib/admin/ui";
 import { orderStatusBadgeVariant } from "@/lib/admin/format";
+import {
+  DOCUMENT_TYPE_LABELS,
+  downloadAdminOrderDocument,
+} from "@/lib/admin/documents";
 
 const STATUS_OPTIONS = Object.keys(ORDER_STATUS_LABELS) as OrderStatus[];
 
@@ -41,6 +45,7 @@ export default function AdminPedidosPage() {
   const [note, setNote] = useState("");
   const [newStatus, setNewStatus] = useState<OrderStatus>("PROCESSING");
   const [error, setError] = useState<string | null>(null);
+  const [docLoading, setDocLoading] = useState<"boleta" | "factura" | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -61,6 +66,19 @@ export default function AdminPedidosPage() {
   }, [load]);
 
   const selected = orders.find((o) => o.id === selectedId) ?? null;
+
+  async function downloadDoc(type: "boleta" | "factura") {
+    if (!selected) return;
+    setDocLoading(type);
+    setError(null);
+    try {
+      await downloadAdminOrderDocument(selected.id, type);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Error al descargar documento");
+    } finally {
+      setDocLoading(null);
+    }
+  }
 
   async function saveStatus() {
     if (!selected) return;
@@ -195,6 +213,48 @@ export default function AdminPedidosPage() {
                   ))}
                 </ul>
               </div>
+
+              {selected.billingAddress ? (
+                <div>
+                  <h3 className="text-xs font-bold uppercase text-neutral-500">Facturación</h3>
+                  <div className="mt-2 rounded-lg border border-neutral-100 bg-neutral-50 px-3 py-2 text-sm text-neutral-700">
+                    <p className="font-medium text-neutral-900">
+                      {selected.billingAddress.documentType === "factura"
+                        ? DOCUMENT_TYPE_LABELS.factura
+                        : DOCUMENT_TYPE_LABELS.boleta}
+                    </p>
+                    {selected.billingAddress.businessName ? (
+                      <p>{selected.billingAddress.businessName}</p>
+                    ) : null}
+                    {selected.billingAddress.taxId ? (
+                      <p>RUT: {selected.billingAddress.taxId}</p>
+                    ) : null}
+                    {selected.billingAddress.businessActivity ? (
+                      <p className="text-neutral-500">{selected.billingAddress.businessActivity}</p>
+                    ) : null}
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <AdminButton
+                      type="button"
+                      variant="secondary"
+                      disabled={docLoading !== null}
+                      onClick={() => void downloadDoc("boleta")}
+                    >
+                      {docLoading === "boleta" ? "Descargando…" : "Descargar boleta"}
+                    </AdminButton>
+                    {selected.billingAddress.documentType === "factura" ? (
+                      <AdminButton
+                        type="button"
+                        variant="secondary"
+                        disabled={docLoading !== null}
+                        onClick={() => void downloadDoc("factura")}
+                      >
+                        {docLoading === "factura" ? "Descargando…" : "Descargar factura"}
+                      </AdminButton>
+                    ) : null}
+                  </div>
+                </div>
+              ) : null}
 
               {selected.payments.length > 0 ? (
                 <div>

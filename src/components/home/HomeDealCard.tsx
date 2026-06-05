@@ -6,7 +6,8 @@ import type { PublicProduct } from "@/lib/catalog/types";
 import { filterGalleryImages } from "@/lib/catalog/product-images";
 import {
   carouselCardWidthClass,
-  COMPACT_CARD_HEIGHT_CLASS,
+  DEAL_CARD_HEIGHT_CLASS,
+  DEAL_CARD_IMAGE_CLASS,
 } from "@/lib/catalog/product-card-layout";
 import { formatDiscountLabel, getVariantPricing } from "@/lib/catalog/pricing";
 import { formatMoney } from "@/lib/admin/format";
@@ -26,20 +27,15 @@ export default function HomeDealCard({ product }: Props) {
 
   return (
     <article
-      className={`group flex shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm transition-shadow hover:shadow-md ${carouselCardWidthClass} ${COMPACT_CARD_HEIGHT_CLASS} ${outOfStock ? "opacity-90" : ""}`}
+      className={`group flex shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-black/5 bg-white shadow-sm transition-shadow hover:shadow-md ${carouselCardWidthClass} ${DEAL_CARD_HEIGHT_CLASS} ${outOfStock ? "opacity-90" : ""}`}
     >
       <Link
         href={`/producto/${product.slug}`}
         className="flex min-h-0 flex-1 flex-col"
       >
-        <div className="relative aspect-square w-full shrink-0 bg-neutral-50 p-2">
-          {discount ? (
-            <span className="absolute left-2 top-2 z-10 rounded-md bg-teal-500 px-1.5 py-0.5 text-[10px] font-bold text-white">
-              {discount}
-            </span>
-          ) : null}
+        <div className={DEAL_CARD_IMAGE_CLASS}>
           {outOfStock ? (
-            <span className="absolute right-2 top-2 z-10 rounded-full bg-neutral-800 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">
+            <span className="absolute right-1.5 top-1.5 z-10 rounded-full bg-neutral-800 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white">
               Agotado
             </span>
           ) : null}
@@ -48,7 +44,7 @@ export default function HomeDealCard({ product }: Props) {
             <img
               src={image.url}
               alt={product.name}
-              className={`h-full w-full object-contain transition-transform group-hover:scale-[1.02] ${outOfStock ? "grayscale" : ""}`}
+              className={`h-full w-full object-cover object-center transition-transform group-hover:scale-[1.03] ${outOfStock ? "grayscale" : ""}`}
             />
           ) : (
             <div className="flex h-full items-center justify-center text-[10px] text-neutral-400">
@@ -56,26 +52,32 @@ export default function HomeDealCard({ product }: Props) {
             </div>
           )}
         </div>
-        <div className="flex min-h-0 flex-1 flex-col p-3 pb-2">
-          <h3 className="line-clamp-3 text-sm font-semibold leading-snug text-neutral-900 sm:text-xs">
+
+        <div className="flex min-h-0 flex-1 flex-col px-3 pb-2 pt-2">
+          <h3 className="line-clamp-2 min-h-[2.25rem] text-sm font-semibold leading-snug text-neutral-900 sm:min-h-[2rem] sm:text-xs">
             {product.name}
           </h3>
           {pricing ? (
-            <div className="mt-auto pt-2">
+            <div className="mt-1.5 shrink-0 space-y-1 pb-0.5">
               {pricing.onSale && pricing.comparePrice ? (
                 <p className="text-xs text-neutral-400 line-through sm:text-[10px]">
                   {formatMoney(pricing.comparePrice)}
                 </p>
               ) : null}
-              <p className="text-base font-bold leading-tight text-brand-dark">
+              <p className="text-base font-bold leading-tight text-brand-dark sm:text-sm">
                 {formatMoney(pricing.price)}
               </p>
+              {discount ? (
+                <span className="inline-block rounded-md bg-teal-500 px-2 py-0.5 text-[11px] font-bold text-white sm:text-[10px]">
+                  {discount}
+                </span>
+              ) : null}
             </div>
           ) : null}
         </div>
       </Link>
 
-      <div className="shrink-0 border-t border-black/5 px-3 pb-3 pt-2">
+      <div className="shrink-0 border-t border-black/5 px-3 pb-2.5 pt-2">
         {variant && pricing?.inStock ? (
           <AddToCartControls
             product={product}

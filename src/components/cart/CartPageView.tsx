@@ -7,6 +7,7 @@ import CartPCPreview from "@/components/cart/CartPCPreview";
 import QuantitySelector from "@/components/cart/QuantitySelector";
 import { useCart } from "@/context/CartContext";
 import { formatMoney, PRODUCT_TYPE_LABELS } from "@/lib/admin/format";
+import { getStockUrgencyLabel } from "@/lib/catalog/pricing";
 import { shouldShowPcBuildPreview } from "@/lib/cart/pc-build-map";
 import {
   cartPageEyebrow,
@@ -60,6 +61,7 @@ export default function CartPageView() {
         <div className="min-w-0 space-y-4">
           {items.map((item) => {
             const lineTotal = item.price * item.quantity;
+            const stockUrgencyLabel = getStockUrgencyLabel(item.maxStock);
             return (
               <article key={item.variantId} className={cartPageItemCard}>
                 <Link
@@ -120,9 +122,9 @@ export default function CartPageView() {
                         size="md"
                         theme="light"
                       />
-                      <span className="text-xs text-neutral-500">
-                        {item.maxStock} en stock
-                      </span>
+                      {stockUrgencyLabel ? (
+                        <span className="text-xs text-neutral-500">{stockUrgencyLabel}</span>
+                      ) : null}
                     </div>
                     <div className="flex flex-wrap items-center gap-4">
                       <Link

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import QuantitySelector from "@/components/cart/QuantitySelector";
 import { useCart } from "@/context/CartContext";
-import { getVariantPricing } from "@/lib/catalog/pricing";
+import { getStockUrgencyLabel, getVariantPricing } from "@/lib/catalog/pricing";
 import type { PublicProduct, PublicProductVariant } from "@/lib/catalog/types";
 
 type Props = {
@@ -21,6 +21,7 @@ export default function AddToCartControls({
 }: Props) {
   const { items, addItem, updateQuantity, openCart } = useCart();
   const pricing = getVariantPricing(variant);
+  const stockUrgencyLabel = getStockUrgencyLabel(pricing.stock);
   const isCatalogLayout = layout === "narrow" || layout === "compact";
 
   const cartItem = items.find((i) => i.variantId === variant.id);
@@ -221,9 +222,9 @@ export default function AddToCartControls({
             size="md"
           />
         </div>
-        <span className="text-xs text-neutral-500">
-          {pricing.stock} disponible{pricing.stock !== 1 ? "s" : ""}
-        </span>
+        {stockUrgencyLabel ? (
+          <span className="text-xs text-neutral-500">{stockUrgencyLabel}</span>
+        ) : null}
       </div>
       <button
         type="button"

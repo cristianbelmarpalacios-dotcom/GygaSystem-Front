@@ -27,5 +27,12 @@ export const compactProductGridClass =
 export const carouselCardWidthClass =
   "w-[min(100%,12.75rem)] min-w-[9.5rem] max-w-[12.75rem] sm:w-[12.75rem]";
 
+/** Ofertas imperdibles: imagen cuadrada a ancho completo + zona de texto */
+export const DEAL_CARD_HEIGHT_CLASS = "min-h-[22.5rem] h-auto sm:h-[24rem]";
+
+/** Imagen cuadrada, ancho de la tarjeta, recorte centrado */
+export const DEAL_CARD_IMAGE_CLASS =
+  "relative aspect-square w-full shrink-0 overflow-hidden bg-neutral-100";
+
 export const featuredCarouselCardWidthClass =
   "w-[min(85vw,15rem)] min-w-[10.5rem] max-w-[15rem] sm:w-[15rem]";

@@ -1,6 +1,7 @@
 import { formatMoney } from "@/lib/admin/format";
 import {
   formatDiscountLabel,
+  getStockUrgencyLabel,
   getVariantPricing,
   type VariantPricing,
 } from "@/lib/catalog/pricing";
@@ -43,14 +44,17 @@ export function ProductStockBadge({ variant }: { variant: VariantPricing }) {
       </span>
     );
   }
-  if (p.stock <= 5) {
-    return (
-      <span className="inline-block rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-800">
-        Últimas {p.stock} unidades
-      </span>
-    );
-  }
+  const label = getStockUrgencyLabel(p.stock);
+  if (!label) return null;
+
+  const urgent = p.stock < 3;
   return (
-    <span className="text-xs text-neutral-500">{p.stock} en stock</span>
+    <span
+      className={`inline-block rounded-full px-2 py-0.5 text-xs font-semibold ${
+        urgent ? "bg-red-100 text-red-800" : "bg-amber-100 text-amber-800"
+      }`}
+    >
+      {label}
+    </span>
   );
 }

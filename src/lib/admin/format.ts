@@ -77,8 +77,33 @@ export function customerLabel(order: {
     firstName: string | null;
     lastName: string | null;
   } | null;
+  billingAddress?: {
+    email?: string;
+    firstName?: string;
+    lastName?: string;
+    businessName?: string | null;
+  } | null;
+  shippingAddress?: {
+    email?: string;
+    recipient?: string;
+  } | null;
 }) {
-  if (!order.user) return "Invitado";
-  const name = [order.user.firstName, order.user.lastName].filter(Boolean).join(" ");
-  return name ? `${name} (${order.user.email})` : order.user.email;
+  if (order.user) {
+    const name = [order.user.firstName, order.user.lastName].filter(Boolean).join(" ");
+    return name ? `${name} (${order.user.email})` : order.user.email;
+  }
+  const billing = order.billingAddress;
+  const shipping = order.shippingAddress;
+  if (billing?.businessName) return billing.businessName;
+  const guestName = [billing?.firstName, billing?.lastName].filter(Boolean).join(" ");
+  if (guestName) {
+    const email = billing?.email ?? shipping?.email;
+    return email ? `${guestName} (${email})` : guestName;
+  }
+  if (shipping?.recipient) {
+    return shipping.email
+      ? `${shipping.recipient} (${shipping.email})`
+      : shipping.recipient;
+  }
+  return billing?.email ?? shipping?.email ?? "Invitado";
 }

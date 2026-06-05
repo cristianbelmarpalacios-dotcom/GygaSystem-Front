@@ -74,9 +74,7 @@ export default function ProductCard({ product }: Props) {
               {variant ? (
                 <>
                   <ProductPrice variant={variant} size="sm" />
-                  <div className="min-h-[1.125rem]">
-                    <ProductStockBadge variant={variant} />
-                  </div>
+                  <ProductStockBadge variant={variant} />
                 </>
               ) : (
                 <p className="text-[10px] text-neutral-500">Precio no disponible</p>

@@ -35,3 +35,11 @@ export function formatDiscountLabel(percent: number | null) {
   if (percent === null || percent <= 0) return null;
   return `-${percent}%`;
 }
+
+/** Mensaje de urgencia para el cliente; nunca expone la cantidad exacta. */
+export function getStockUrgencyLabel(stock: number): string | null {
+  if (stock <= 0) return null;
+  if (stock < 3) return "¡Casi agotado, no te quedes sin el tuyo!";
+  if (stock < 10) return "Últimas unidades";
+  return null;
+}
